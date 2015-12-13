@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">TestApp</string>
+    <string name="offer_ride">Offer a ride</string>
+    <string name="offered_rides">Offered rides</string>
+    <string name="my_rides">My rides</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_example">Example action</string>
+    <string name="action_settings">Settings</string>
+    <string name="share_with">Share with..</string>
+	<string name="share_text">Hey! I\'m sharing  a ride with you. </string>
+    
+    <string-array name="trip_types">
+        <item>Recurring</item>
+        <item>one time</item>
+    </string-array>
+</resources>

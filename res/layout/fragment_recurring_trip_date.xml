@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <CheckBox
+        android:id="@+id/roundTripCheckbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="Round trip" />
+
+    <TextView
+        android:id="@+id/dateTimeTitle"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_marginTop="37dp"
+        android:background="#33B5E5"
+        android:padding="4dp"
+        android:text="Date and time"
+        android:textColor="#ffffff"
+        android:textStyle="bold" />
+
+     <Button
+       android:id="@+id/setStartDate"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:text="Start date"
+       android:ems="10" >
+   	  </Button>
+   	  
+     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="2dp"
+        android:paddingTop="2dp"
+        >
+		
+      <Button
+       android:id="@+id/setStartTime"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_weight="1"
+       android:text="Start time"
+       android:ems="10" >
+   	  </Button>
+   	  
+      <Button
+       android:id="@+id/setReturnTime"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_weight="1"
+       android:text="Return time"
+       android:ems="10" >
+   	  </Button>
+        
+    </LinearLayout>
+
+   <TextView
+        android:id="@+id/priceTitle"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_marginTop="37dp"
+        android:background="#33B5E5"
+        android:padding="4dp"
+        android:text="Pricing"
+        android:textColor="#ffffff"
+        android:textStyle="bold" />
+
+   <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="2dp"
+        android:paddingTop="2dp"
+        >
+		<CheckBox
+	       android:id="@+id/chargeCheckbox"
+	       android:layout_width="wrap_content"
+	       android:layout_height="wrap_content"
+	       android:checked="true"
+	       android:text="Free of charge" />
+
+		<EditText
+		    android:id="@+id/chargeEditText"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_weight="1"
+		    android:visibility="invisible"
+		    android:ems="10" >
+
+		</EditText>
+        
+    </LinearLayout>
+   
+
+   
+        
+   <Button
+        android:id="@+id/next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button2"
+        android:layout_gravity="right|bottom"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="41dp"
+        android:layout_toRightOf="@+id/textView2"
+        android:background="#33B5E5"
+        android:text="Next" />
+
+</LinearLayout>
