@@ -1,7 +1,6 @@
 package com.example.datamodel;
 
-import java.util.Date;
-
+import java.util.ArrayList;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -23,6 +22,8 @@ public class Ride implements Parcelable{
 	private boolean isRoundTrip = true;
 	
 	private boolean isRecurring = true;
+	
+	private ArrayList<LatLng> wayPoints = new ArrayList<LatLng>();
 	
 	public String getSourceAddress() {
 		return sourceAddress;
@@ -86,6 +87,18 @@ public class Ride implements Parcelable{
 
 	public void setRecurring(boolean isRecurring) {
 		this.isRecurring = isRecurring;
+	}
+
+	public ArrayList<LatLng> getWayPoints() {
+		return wayPoints;
+	}
+
+	public void setWayPoints(ArrayList<LatLng> wayPoints) {
+		this.wayPoints = wayPoints;
+	}
+
+	public void addWayPoint(LatLng wayPoint) {
+		wayPoints.add(wayPoint);
 	}
 
 	@Override

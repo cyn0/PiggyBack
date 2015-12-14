@@ -6,13 +6,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
 public class MapHelper {
-	public static String getDirectionsUrl(LatLng origin,LatLng dest){
+	public static String getDirectionsUrl(LatLng origin,LatLng dest, ArrayList<LatLng> wayPoints){
 		 
         // Origin of route
         String str_origin = "origin="+origin.latitude+","+origin.longitude;
@@ -26,9 +27,18 @@ public class MapHelper {
         // Building the parameters to the web service
         String parameters = str_origin+"&"+str_dest+"&"+sensor;
  
+        if(wayPoints != null && wayPoints.size() > 0){
+        	String waypoints = "waypoints=optimize:true"; //"|Barossa+Valley,SA|Clare,SA|Connawarra,SA|McLaren+Vale,SA";
+        	
+        	for(LatLng wayPoint : wayPoints){
+        		waypoints = waypoints + "|" + wayPoint.latitude+","+ wayPoint.longitude;
+        	}
+        	parameters = parameters + "&" + waypoints;
+        }
+        
         // Output format
         String output = "json";
- 
+        
         // Building the url to the web service
         String url = "https://maps.googleapis.com/maps/api/directions/"+output+"?"+parameters;
  

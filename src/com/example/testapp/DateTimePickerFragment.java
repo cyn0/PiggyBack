@@ -200,66 +200,69 @@ public class DateTimePickerFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 
-				if(mOfferRide.getStartDate() == null){
-	        		Toast.makeText(getActivity(), "Please set trip start date", Toast.LENGTH_LONG).show();
-	        		return;
-	        	} else if(mOfferRide.getStartTime() == null){
-	        		Toast.makeText(getActivity(), "Please set start time for forward journey", Toast.LENGTH_LONG).show();
-	        		return;
-	        	} else if(mOfferRide.isRoundTrip() && mOfferRide.getReturnTime() == null){
-	        		Toast.makeText(getActivity(), "Please set start time for return journey", Toast.LENGTH_LONG).show();
-	        		return;
-	        	} else if(mOfferRide.isPriced()){
-	        		String charge = chargeEditText.getText().toString();
-			    	if(TextUtils.isEmpty(charge)){
-			    		Toast.makeText(getActivity(), "Please set price for the trip", Toast.LENGTH_LONG).show();
-		        		return;
-			    	}
-			    	try{
-			    		double charge1 = Double.parseDouble(charge);
-			    		if(charge1 <=0){
-			    			throw new Exception("price less than zero");
-			    		} else {
-			    			mOfferRide.setPrice(charge1);
-			    		}
-			    	}catch(Exception e){
-			    		Log.e("exception", e.getLocalizedMessage());
-			    		Toast.makeText(getActivity(), "Please set valid price for the trip", Toast.LENGTH_LONG).show();
-			    		return;
-			    	}
-			    	
-	        	} 
-	        	
-				HttpDataListener mDataListener = new HttpDataListener() {				
-					@Override
-					public void onError(Exception e) {			
-						Toast.makeText(getActivity(), "Something went wrong. Please try after some time", Toast.LENGTH_LONG).show();
-					}
-					
-					@Override
-					public void onDataAvailable(String response) {
-						try{
-								JSONObject jsonResponse = new JSONObject(response);
-								boolean success = jsonResponse.getBoolean("success");
-								if(success){
-									String ride_id = jsonResponse.getString("ride_id");
-									String share_text = getString(R.string.share_text);
-									Intent sendIntent = new Intent();
-									sendIntent.setAction(Intent.ACTION_SEND);
-									
-									sendIntent.putExtra(Intent.EXTRA_TEXT, share_text +" http://ShareDrive.com/" + ride_id);
-									sendIntent.setType("text/plain");
-									startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.share_with)));
-									
-								}
-						}catch (JSONException e){
-							e.printStackTrace();
-						}
-					}
-				};
+//				if(mOfferRide.getStartDate() == null){
+//	        		Toast.makeText(getActivity(), "Please set trip start date", Toast.LENGTH_LONG).show();
+//	        		return;
+//	        	} else if(mOfferRide.getStartTime() == null){
+//	        		Toast.makeText(getActivity(), "Please set start time for forward journey", Toast.LENGTH_LONG).show();
+//	        		return;
+//	        	} else if(mOfferRide.isRoundTrip() && mOfferRide.getReturnTime() == null){
+//	        		Toast.makeText(getActivity(), "Please set start time for return journey", Toast.LENGTH_LONG).show();
+//	        		return;
+//	        	} else if(mOfferRide.isPriced()){
+//	        		String charge = chargeEditText.getText().toString();
+//			    	if(TextUtils.isEmpty(charge)){
+//			    		Toast.makeText(getActivity(), "Please set price for the trip", Toast.LENGTH_LONG).show();
+//		        		return;
+//			    	}
+//			    	try{
+//			    		double charge1 = Double.parseDouble(charge);
+//			    		if(charge1 <=0){
+//			    			throw new Exception("price less than zero");
+//			    		} else {
+//			    			mOfferRide.setPrice(charge1);
+//			    		}
+//			    	}catch(Exception e){
+//			    		Log.e("exception", e.getLocalizedMessage());
+//			    		Toast.makeText(getActivity(), "Please set valid price for the trip", Toast.LENGTH_LONG).show();
+//			    		return;
+//			    	}
+//			    	
+//	        	} 
+//	        	
+//				HttpDataListener mDataListener = new HttpDataListener() {				
+//					@Override
+//					public void onError(Exception e) {			
+//						Toast.makeText(getActivity(), "Something went wrong. Please try after some time", Toast.LENGTH_LONG).show();
+//					}
+//					
+//					@Override
+//					public void onDataAvailable(String response) {
+//						try{
+//								JSONObject jsonResponse = new JSONObject(response);
+//								boolean success = jsonResponse.getBoolean("success");
+//								if(success){
+//									String ride_id = jsonResponse.getString("ride_id");
+//									String share_text = getString(R.string.share_text);
+//									Intent sendIntent = new Intent();
+//									sendIntent.setAction(Intent.ACTION_SEND);
+//									
+//									sendIntent.putExtra(Intent.EXTRA_TEXT, share_text +" http://ShareDrive.com/" + ride_id);
+//									sendIntent.setType("text/plain");
+//									startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.share_with)));
+//									
+//								}
+//						}catch (JSONException e){
+//							e.printStackTrace();
+//						}
+//					}
+//				};
+//				
+//				Httphandler httphandler = new Httphandler(getActivity(), mDataListener);
+//				httphandler.postNewRide(mOfferRide);
 				
-				Httphandler httphandler = new Httphandler(getActivity(), mDataListener);
-				httphandler.postNewRide(mOfferRide);
+				Intent myIntent = new Intent(getActivity(), MapActivity.class);
+				startActivity(myIntent);
 			}
 		});
         return view;
