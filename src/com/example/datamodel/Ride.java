@@ -5,6 +5,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 
 public class Ride implements Parcelable{
 	private String sourceAddress;
@@ -23,7 +24,7 @@ public class Ride implements Parcelable{
 	
 	private boolean isRecurring = true;
 	
-	private ArrayList<LatLng> wayPoints = new ArrayList<LatLng>();
+	private ArrayList<Marker> wayPoints = new ArrayList<Marker>();
 	
 	public String getSourceAddress() {
 		return sourceAddress;
@@ -89,18 +90,22 @@ public class Ride implements Parcelable{
 		this.isRecurring = isRecurring;
 	}
 
-	public ArrayList<LatLng> getWayPoints() {
+	public ArrayList<Marker> getWayPoints() {
 		return wayPoints;
 	}
 
-	public void setWayPoints(ArrayList<LatLng> wayPoints) {
+	public void setWayPoints(ArrayList<Marker> wayPoints) {
 		this.wayPoints = wayPoints;
 	}
 
-	public void addWayPoint(LatLng wayPoint) {
+	public void addWayPoint(Marker wayPoint) {
 		wayPoints.add(wayPoint);
 	}
 
+	public void removeWayPoint(Marker wayPoint) {
+		wayPoints.remove(wayPoint);
+	}
+	
 	@Override
 	public int describeContents() {
 		// TODO Auto-generated method stub

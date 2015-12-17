@@ -11,9 +11,10 @@ import java.util.ArrayList;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 
 public class MapHelper {
-	public static String getDirectionsUrl(LatLng origin,LatLng dest, ArrayList<LatLng> wayPoints){
+	public static String getDirectionsUrl(LatLng origin,LatLng dest, ArrayList<Marker> wayPoints){
 		 
         // Origin of route
         String str_origin = "origin="+origin.latitude+","+origin.longitude;
@@ -30,8 +31,9 @@ public class MapHelper {
         if(wayPoints != null && wayPoints.size() > 0){
         	String waypoints = "waypoints=optimize:true"; //"|Barossa+Valley,SA|Clare,SA|Connawarra,SA|McLaren+Vale,SA";
         	
-        	for(LatLng wayPoint : wayPoints){
-        		waypoints = waypoints + "|" + wayPoint.latitude+","+ wayPoint.longitude;
+        	for(Marker wayPoint : wayPoints){
+        		LatLng latLng = wayPoint.getPosition();
+        		waypoints = waypoints + "|" + latLng.latitude+","+ latLng.longitude;
         	}
         	parameters = parameters + "&" + waypoints;
         }

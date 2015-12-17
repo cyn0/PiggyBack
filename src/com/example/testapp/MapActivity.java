@@ -1,6 +1,7 @@
 package com.example.testapp;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -22,10 +23,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.datamodel.OfferRide;
 import com.example.datamodel.Ride;
 import com.example.map.DirectionsJSONParser;
 import com.example.map.MapHelper;
 import com.example.utils.CommonUtil;
+import com.example.utils.TimeHelper;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -76,12 +79,19 @@ public class MapActivity extends BaseMapActivity{
 	}
 	
 	protected boolean handleMarkerClicked(Marker marker){
+		if(mRide.getWayPoints().contains(marker)){
+			marker.remove();
+			mRide.removeWayPoint(marker);
+			drawRoute(mRide.getSource(), mRide.getDestination(), mRide.getWayPoints());
+		}
 		return true;
 	}
 	  
 	protected void handleMapLongPressed(LatLng point){
-		mRide.addWayPoint(point);
-		addMarker(point).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.waypoint_marker));
+		Marker marker = addMarker(point);
+		marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.waypoint_marker));
+		
+		mRide.addWayPoint(marker);
 		drawRoute(mRide.getSource(), mRide.getDestination(), mRide.getWayPoints());
 	}
 	  
@@ -123,9 +133,20 @@ public class MapActivity extends BaseMapActivity{
 			setContentView(R.layout.activity_map);
 			
 			//mRide = (Ride)getIntent().getSerializableExtra(Constants.OFFER_RIDE_OBJECT);
-			mRide = new Ride();
+			mRide = new OfferRide();
 			mRide.setDestination(new LatLng(13.078384999999999,  80.264411));
 			mRide.setSource(new LatLng( 12.9969278, 80.2563313));
+			mRide.setSourceAddress("Gandhi Irwin Rd, Ansari Estate, Egmore, Chennai, Tamil Nadu 600008, India");
+			mRide.setDestinationAddress("Mahatma Gandhi Rd, Shastri Nagar, Adyar, Chennai, Tamil Nadu 600020, India");
+			
+			mRide.setRecurring(true);
+			mRide.setRoundTrip(false);
+			
+			//Specific to OfferRide
+			OfferRide mOfferRide = (OfferRide)mRide;
+			mOfferRide.setStartDate(new Date(1,2,2016+1900));
+			mOfferRide.setStartTime(new Date(0, 0, 0, 8, 30));
+			mOfferRide.setReturnTime(new Date(0, 0, 0, 19, 30));
 			
 			setViews();
 			
@@ -204,6 +225,40 @@ public class MapActivity extends BaseMapActivity{
 				shareMessage();
 			}
 		});
+		
+		TextView sourceAddress = (TextView)findViewById(R.id.sourceAddress);
+		TextView destinationAddress = (TextView)findViewById(R.id.destinationAddress);
+		
+		sourceAddress.setText(mRide.getSourceAddress());
+		destinationAddress.setText(mRide.getDestinationAddress());
+		
+		TextView temp;
+		
+		temp = (TextView)findViewById(R.id.tripType);
+		if(mRide.isRecurring()){
+			temp.setText("Recurring");
+		}else{
+			temp.setText("One time");
+		}
+		
+		temp = (TextView)findViewById(R.id.roundTrip);
+		if(mRide.isRoundTrip()){
+			temp.setText("Yes");
+		}else{
+			temp.setText("No");
+		}
+		
+		//OfferRide specific
+		OfferRide mOfferRide = (OfferRide)mRide;
+		
+		temp = (TextView)findViewById(R.id.startDate);
+		temp.setText(TimeHelper.DateToString(mOfferRide.getStartDate()));
+		
+		temp = (TextView)findViewById(R.id.startTime);
+		temp.setText(TimeHelper.TimeToString(mOfferRide.getStartTime()));
+		
+		temp = (TextView)findViewById(R.id.returnTime);
+		temp.setText(TimeHelper.TimeToString(mOfferRide.getReturnTime()));
 	}
 	
 	public void shareMessage(){

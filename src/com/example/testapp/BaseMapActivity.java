@@ -13,6 +13,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.widget.Toast;
+
 import com.example.map.DirectionsJSONParser;
 import com.example.map.MapHelper;
 import com.google.android.gms.location.LocationRequest;
@@ -113,7 +115,7 @@ public abstract class BaseMapActivity extends Activity {
 	
 	  
 	  
-	  public void drawRoute(LatLng source, LatLng destination, ArrayList<LatLng> wayPoints){		  
+	  public void drawRoute(LatLng source, LatLng destination, ArrayList<Marker> wayPoints){		  
 		  String url = MapHelper.getDirectionsUrl(source, destination, wayPoints);
 			 
           DownloadTask downloadTask = new DownloadTask();
@@ -129,6 +131,7 @@ public abstract class BaseMapActivity extends Activity {
 	  
 	  private class DownloadTask extends AsyncTask<String, Void, String>{
 		  
+		    boolean success = true;
 	        // Downloading data in non-ui thread
 	        @Override
 	        protected String doInBackground(String... url) {
@@ -139,6 +142,7 @@ public abstract class BaseMapActivity extends Activity {
 	                Log.d("Response",data);
 	            }catch(Exception e){
 	                Log.d("Background Task",e.toString());
+	                success = false;
 	            }
 	            return data;
 	        }
@@ -146,9 +150,12 @@ public abstract class BaseMapActivity extends Activity {
 	        @Override
 	        protected void onPostExecute(String result) {
 	            super.onPostExecute(result);
-	            ParserTask parserTask = new ParserTask();
-	 
-	            parserTask.execute(result);
+	            if(success){
+	            	ParserTask parserTask = new ParserTask();
+	            	parserTask.execute(result);
+	            }else{
+	            	Toast.makeText(getApplicationContext(), "Unable to reach server", Toast.LENGTH_LONG).show();
+	            }
 	        }
 	    }
 	  

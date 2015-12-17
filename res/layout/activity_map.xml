@@ -44,9 +44,10 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:textSize="14sp"
-                    android:text="title here"
+                    android:textSize="20sp"
+                    android:text="MY RIDE"
                     android:gravity="center_vertical"
+                    android:textStyle="bold"
                     android:paddingLeft="10dp"/>
 
                 <Button
@@ -75,6 +76,7 @@
 		                android:layout_height="wrap_content"
 		                android:orientation="horizontal">
 	
+	                    <!-- 
 	                    <Button
 		                    android:id="@+id/follow1"
 		                    android:layout_width="wrap_content"
@@ -83,14 +85,23 @@
 		                    android:gravity="center_vertical|right"
 		                    android:paddingRight="10dp"
 		                    android:paddingLeft="10dp"/>
-	                    
+	                     -->
+	                     <ImageView
+					        android:layout_width="30dp"
+					        android:layout_height="30dp"
+					        android:layout_alignParentLeft="true"
+					        android:layout_alignParentTop="true"
+					        android:layout_marginLeft="5dp"
+					        android:src="@drawable/test" />
 	                    <TextView
-		                    android:id="@+id/SlidingPanelTitle1"
+		                    android:id="@+id/sourceAddress"
 		                    android:layout_width="0dp"
-		                    android:layout_height="match_parent"
+		                    android:layout_height="wrap_content"
 		                    android:layout_weight="1"
-		                    android:textSize="14sp"
-		                    android:text="details here"
+		                    android:textSize="25sp"
+							android:maxLines="2"
+							android:textStyle="bold"
+     						android:singleLine="false"
 		                    android:gravity="center_vertical"
 		                    android:paddingLeft="10dp"/>
             	</LinearLayout>
@@ -98,8 +109,10 @@
 	             <LinearLayout
 	                android:layout_width="match_parent"
 	                android:layout_height="wrap_content"
+	                android:paddingTop="5dp"
 	                android:orientation="horizontal">
-
+		
+	                 <!-- 
 	                <Button
 	                    android:id="@+id/follow2"
 	                    android:layout_width="wrap_content"
@@ -108,28 +121,159 @@
 	                    android:gravity="center_vertical|right"
 	                    android:paddingRight="10dp"
 	                    android:paddingLeft="10dp"/>
+	                    -->
+	                 <ImageView
+					        android:layout_width="30dp"
+					        android:layout_height="30dp"
+					        android:layout_alignParentLeft="true"
+					        android:layout_alignParentTop="true"
+					        android:layout_marginLeft="5dp"
+					        android:src="@drawable/test" />  
+					   <TextView
+		                    android:id="@+id/destinationAddress"
+		                    android:layout_width="0dp"
+		                    android:layout_height="wrap_content"
+		                    android:layout_weight="1"
+		                    android:textSize="25sp"
+		                    android:textStyle="bold"
+		                    android:text="details here"
+		                    android:gravity="center_vertical"
+		                    android:paddingLeft="10dp"/> 
 	            </LinearLayout>
 
-	             	<LinearLayout
+	            <LinearLayout
 		                android:layout_width="match_parent"
 		                android:layout_height="wrap_content"
 		                android:orientation="horizontal">
 
-	                <Button
-	                    android:id="@+id/follow3"
-	                    android:layout_width="wrap_content"
-	                    android:layout_height="match_parent"
-	                    android:textSize="14sp"
-	                    android:gravity="center_vertical|right"
-	                    android:paddingRight="10dp"
-	                    android:paddingLeft="10dp"/>
-		
+					 <TextView
+		                    android:layout_width="0dp"
+		                    android:layout_height="wrap_content"
+		                    android:layout_weight="1"
+		                    android:textSize="14sp"
+		                    android:text="Trip Type : "
+		                    android:gravity="center_vertical"
+		                    android:paddingLeft="10dp"/> 
+		                    
+					 <TextView
+		                    android:id="@+id/tripType"
+		                    android:layout_width="0dp"
+		                    android:layout_height="wrap_content"
+		                    android:layout_weight="1"
+		                    android:textSize="14sp"
+		                    android:text="details here"
+		                    android:gravity="center_vertical"
+		                    android:paddingLeft="10dp"/> 
 	                
 	            </LinearLayout>
 
-	             
 
-	             	<LinearLayout
+	            <LinearLayout
+		                android:layout_width="match_parent"
+		                android:layout_height="wrap_content"
+		                android:orientation="horizontal">
+
+					 <TextView
+		                    android:layout_width="0dp"
+		                    android:layout_height="wrap_content"
+		                    android:layout_weight="1"
+		                    android:textSize="14sp"
+		                    android:text="Round trip :"
+		                    android:gravity="center_vertical"
+		                    android:paddingLeft="10dp"/> 
+		                    
+					 <TextView
+		                    android:id="@+id/roundTrip"
+		                    android:layout_width="0dp"
+		                    android:layout_height="wrap_content"
+		                    android:layout_weight="1"
+		                    android:textSize="14sp"
+		                    android:text="details here"
+		                    android:gravity="center_vertical"
+		                    android:paddingLeft="10dp"/> 
+	                
+	            </LinearLayout>
+	            
+	            	            
+	            <LinearLayout
+		                android:layout_width="match_parent"
+		                android:layout_height="wrap_content"
+		                android:orientation="horizontal">
+
+					 <TextView
+		                    android:layout_width="0dp"
+		                    android:layout_height="wrap_content"
+		                    android:layout_weight="1"
+		                    android:textSize="14sp"
+		                    android:text="Trip start date"
+		                    android:gravity="center_vertical"
+		                    android:paddingLeft="10dp"/> 
+		                    
+					 <TextView
+		                    android:id="@+id/startDate"
+		                    android:layout_width="0dp"
+		                    android:layout_height="wrap_content"
+		                    android:layout_weight="1"
+		                    android:textSize="14sp"
+		                    android:text="details here"
+		                    android:gravity="center_vertical"
+		                    android:paddingLeft="10dp"/> 
+	                
+	            </LinearLayout>
+	            	            
+	           	<LinearLayout
+		                android:layout_width="match_parent"
+		                android:layout_height="wrap_content"
+		                android:orientation="horizontal">
+
+					 <TextView
+		                    android:layout_width="0dp"
+		                    android:layout_height="wrap_content"
+		                    android:layout_weight="1"
+		                    android:textSize="14sp"
+		                    android:text="Forward journey start time :"
+		                    android:gravity="center_vertical"
+		                    android:paddingLeft="10dp"/> 
+		                    
+					 <TextView
+		                    android:id="@+id/startTime"
+		                    android:layout_width="0dp"
+		                    android:layout_height="wrap_content"
+		                    android:layout_weight="1"
+		                    android:textSize="14sp"
+		                    android:text="details here"
+		                    android:gravity="center_vertical"
+		                    android:paddingLeft="10dp"/> 
+	                
+	            </LinearLayout>
+	            
+	           	<LinearLayout
+		                android:layout_width="match_parent"
+		                android:layout_height="wrap_content"
+		                android:orientation="horizontal">
+
+					 <TextView
+		                    android:layout_width="0dp"
+		                    android:layout_height="wrap_content"
+		                    android:layout_weight="1"
+		                    android:textSize="14sp"
+		                    android:text="Return journey start time :"
+		                    android:gravity="center_vertical"
+		                    android:paddingLeft="10dp"/> 
+		                    
+					 <TextView
+		                    android:id="@+id/returnTime"
+		                    android:layout_width="0dp"
+		                    android:layout_height="wrap_content"
+		                    android:layout_weight="1"
+		                    android:textSize="14sp"
+		                    android:text="details here"
+		                    android:gravity="center_vertical"
+		                    android:paddingLeft="10dp"/> 
+	                
+	            </LinearLayout>	            	             
+
+	            <LinearLayout
 		                android:layout_width="match_parent"
 		                android:layout_height="wrap_content"
 		                android:gravity="bottom|right"
@@ -152,5 +296,6 @@
         
 	</com.sothree.slidinguppanel.SlidingUpPanelLayout>
 
+    
     
 </RelativeLayout>
