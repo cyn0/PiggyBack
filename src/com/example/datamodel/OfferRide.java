@@ -6,6 +6,10 @@ import java.util.Date;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.Log;
+
 import com.example.utils.TimeHelper;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -164,4 +168,54 @@ public class OfferRide extends Ride{
 		}
 		return null;
 	}
+	
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		super.writeToParcel(dest, flags);
+		
+		dest.writeLong(startDate.getTime());
+		dest.writeLong(startTime.getTime());
+		dest.writeLong(returnTime.getTime());
+		
+		dest.writeDouble(price);
+		
+		boolean val[] = new boolean[1];
+		val[0] = isPriced;
+		dest.writeBooleanArray(val);
+		Log.d("!!!!!!!!!!!11111111", "successfully wrote ");
+	}
+	
+	public static final Parcelable.Creator<OfferRide> CREATOR = new Parcelable.Creator<OfferRide>() {
+        public OfferRide createFromParcel(Parcel in) {
+            return new OfferRide(in);
+        }
+
+        public OfferRide[] newArray(int size) {
+            return new OfferRide[size];
+        }
+    };
+
+    // example constructor that takes a Parcel and gives you an object populated with it's values
+    private OfferRide(Parcel in) {
+    	super(in);
+    	long time;
+    	time = in.readLong();
+    	startDate = new Date(); 
+    	startDate.setTime(time);
+    	
+    	time = in.readLong();
+    	startTime = new Date();
+    	startTime.setTime(time);
+    	
+    	time = in.readLong();
+    	returnTime = new Date();
+    	returnTime.setTime(time);
+    	
+    	price = in.readDouble();
+    	
+    	boolean val[] = new boolean[1];
+    	in.readBooleanArray(val);
+    	isPriced = val[0];
+    	
+    }
 }

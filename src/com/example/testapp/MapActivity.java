@@ -79,9 +79,9 @@ public class MapActivity extends BaseMapActivity{
 	}
 	
 	protected boolean handleMarkerClicked(Marker marker){
-		if(mRide.getWayPoints().contains(marker)){
+		if(mRide.getWayPoints().contains(marker.getPosition())){
 			marker.remove();
-			mRide.removeWayPoint(marker);
+			mRide.removeWayPoint(marker.getPosition());
 			drawRoute(mRide.getSource(), mRide.getDestination(), mRide.getWayPoints());
 		}
 		return true;
@@ -91,7 +91,7 @@ public class MapActivity extends BaseMapActivity{
 		Marker marker = addMarker(point);
 		marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.waypoint_marker));
 		
-		mRide.addWayPoint(marker);
+		mRide.addWayPoint(marker.getPosition());
 		drawRoute(mRide.getSource(), mRide.getDestination(), mRide.getWayPoints());
 	}
 	  
@@ -132,21 +132,21 @@ public class MapActivity extends BaseMapActivity{
 			super.onCreate(savedInstanceState);
 			setContentView(R.layout.activity_map);
 			
-			//mRide = (Ride)getIntent().getSerializableExtra(Constants.OFFER_RIDE_OBJECT);
-			mRide = new OfferRide();
-			mRide.setDestination(new LatLng(13.078384999999999,  80.264411));
-			mRide.setSource(new LatLng( 12.9969278, 80.2563313));
-			mRide.setSourceAddress("Gandhi Irwin Rd, Ansari Estate, Egmore, Chennai, Tamil Nadu 600008, India");
-			mRide.setDestinationAddress("Mahatma Gandhi Rd, Shastri Nagar, Adyar, Chennai, Tamil Nadu 600020, India");
-			
-			mRide.setRecurring(true);
-			mRide.setRoundTrip(false);
-			
-			//Specific to OfferRide
-			OfferRide mOfferRide = (OfferRide)mRide;
-			mOfferRide.setStartDate(new Date(1,2,2016+1900));
-			mOfferRide.setStartTime(new Date(0, 0, 0, 8, 30));
-			mOfferRide.setReturnTime(new Date(0, 0, 0, 19, 30));
+			mRide = (Ride) getIntent().getParcelableExtra(Constants.OFFER_RIDE_OBJECT);
+//			mRide = new OfferRide();
+//			mRide.setDestination(new LatLng(13.078384999999999,  80.264411));
+//			mRide.setSource(new LatLng( 12.9969278, 80.2563313));
+//			mRide.setSourceAddress("Gandhi Irwin Rd, Ansari Estate, Egmore, Chennai, Tamil Nadu 600008, India");
+//			mRide.setDestinationAddress("Mahatma Gandhi Rd, Shastri Nagar, Adyar, Chennai, Tamil Nadu 600020, India");
+//			
+//			mRide.setRecurring(true);
+//			mRide.setRoundTrip(false);
+//			
+//			//Specific to OfferRide
+//			OfferRide mOfferRide = (OfferRide)mRide;
+//			mOfferRide.setStartDate(new Date(1,2,2016+1900));
+//			mOfferRide.setStartTime(new Date(0, 0, 0, 8, 30));
+//			mOfferRide.setReturnTime(new Date(0, 0, 0, 19, 30));
 			
 			setViews();
 			

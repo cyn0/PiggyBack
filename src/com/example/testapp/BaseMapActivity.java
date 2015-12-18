@@ -115,7 +115,7 @@ public abstract class BaseMapActivity extends Activity {
 	
 	  
 	  
-	  public void drawRoute(LatLng source, LatLng destination, ArrayList<Marker> wayPoints){		  
+	  public void drawRoute(LatLng source, LatLng destination, ArrayList<LatLng> wayPoints){		  
 		  String url = MapHelper.getDirectionsUrl(source, destination, wayPoints);
 			 
           DownloadTask downloadTask = new DownloadTask();

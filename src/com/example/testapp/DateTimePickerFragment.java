@@ -27,6 +27,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -262,6 +263,7 @@ public class DateTimePickerFragment extends Fragment {
 //				httphandler.postNewRide(mOfferRide);
 				
 				Intent myIntent = new Intent(getActivity(), MapActivity.class);
+				myIntent.putExtra(Constants.OFFER_RIDE_OBJECT, (Parcelable) mOfferRide);
 				startActivity(myIntent);
 			}
 		});
