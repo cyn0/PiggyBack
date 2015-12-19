@@ -1,56 +1,35 @@
 package com.example.testapp;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-
+import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.datamodel.OfferRide;
 import com.example.datamodel.Ride;
-import com.example.map.DirectionsJSONParser;
-import com.example.map.MapHelper;
-import com.example.utils.CommonUtil;
+import com.example.http.Httphandler;
+import com.example.http.Httphandler.HttpDataListener;
+import com.example.map.BaseMapActivity;
+import com.example.utils.Constants;
 import com.example.utils.TimeHelper;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
-import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
-import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelSlideListener;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState;
 
 
@@ -64,7 +43,7 @@ public class MapActivity extends BaseMapActivity{
 	private Ride mRide;
 	LatLngBounds.Builder latLngBuilder;
 	  
-	//protected SlidingUpPanelLayout slidingUpPanelLayout;
+	protected SlidingUpPanelLayout slidingUpPanelLayout;
 	
 	TextView SlidingPanelTitle;
 	protected Button shareButton, editButton;
@@ -183,12 +162,11 @@ public class MapActivity extends BaseMapActivity{
 	
 	@Override
 	public void onBackPressed() {
-		
-//		if(slidingUpPanelLayout.getPanelState().equals(PanelState.ANCHORED)){
-//			slidingUpPanelLayout.setPanelState(PanelState.COLLAPSED);
-//		}else{
-//			super.onBackPressed();
-//		}
+		if(slidingUpPanelLayout.getPanelState().compareTo(PanelState.EXPANDED) == 0){
+			slidingUpPanelLayout.setPanelState(PanelState.COLLAPSED);
+		}else{
+			super.onBackPressed();
+		}
 	}
 	
 	public void doInitialMapSetUps(){
@@ -206,12 +184,12 @@ public class MapActivity extends BaseMapActivity{
 	
 	public void setViews(){
 		map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+		slidingUpPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
 		
 		SlidingPanelTitle = (TextView)findViewById(R.id.SlidingPanelTitle);
 		shareButton = (Button)findViewById(R.id.share);
 		editButton = (Button) findViewById(R.id.edit);
 		editButton.setOnClickListener(new View.OnClickListener() {
-			
 			@Override
 			public void onClick(View v) {
 				Toast.makeText(getApplicationContext(), "text", Toast.LENGTH_LONG).show();
@@ -219,10 +197,9 @@ public class MapActivity extends BaseMapActivity{
 		});
 		
 		shareButton.setOnClickListener(new View.OnClickListener() {
-			
 			@Override
 			public void onClick(View v) {
-				shareMessage();
+				handleShareButtonClicked();
 			}
 		});
 		
@@ -261,9 +238,45 @@ public class MapActivity extends BaseMapActivity{
 		temp.setText(TimeHelper.TimeToString(mOfferRide.getReturnTime()));
 	}
 	
-	public void shareMessage(){
+	public void handleShareButtonClicked(){
+		final ProgressDialog progress = ProgressDialog.show(this, "dialog title",
+			    "dialog message", true);
+		HttpDataListener mDataListener = new HttpDataListener() {				
+			@Override
+			public void onError(Exception e) {			
+				//Toast.makeText(getApplicationContext(), "Something went wrong. Please try after some time", Toast.LENGTH_LONG).show();
+				Log.e(TAG , e.getLocalizedMessage());
+				progress.dismiss();
+				Toast.makeText(getApplicationContext(), "Unable to reach server", Toast.LENGTH_LONG).show();
+			}
+			
+			@Override
+			public void onDataAvailable(String response) {
+				try{
+						JSONObject jsonResponse = new JSONObject(response);
+						boolean success = jsonResponse.getBoolean("success");
+						if(success){
+							String ride_id = jsonResponse.getString("ride_id");
+							shareMessage(ride_id);
+							progress.dismiss();
+						} else {
+							progress.dismiss();
+							Toast.makeText(getApplicationContext(), "Something went wrong. Please try after some time", Toast.LENGTH_LONG).show();
+						}
+				}catch (JSONException e){
+					e.printStackTrace();
+				}
+			}
+		};
+		
+		Httphandler.getSharedInstance().postNewRide((OfferRide)mRide, mDataListener);
+
+	}
+	
+	
+	public void shareMessage(String ride_id){
 		String message =  getString(R.string.share_text);
-		message += " http://ShareDrive.com/12weT5E3";// + ride_id);
+		message += " http://ShareDrive.com/" + ride_id;
 		//CommonUtil.shareTextMessage(message, getApplicationContext());
 		
 		Intent sendIntent = new Intent();

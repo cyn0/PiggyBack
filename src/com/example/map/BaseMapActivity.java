@@ -1,4 +1,4 @@
-package com.example.testapp;
+package com.example.map;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,8 +15,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.widget.Toast;
 
-import com.example.map.DirectionsJSONParser;
-import com.example.map.MapHelper;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
@@ -31,14 +29,13 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 public abstract class BaseMapActivity extends Activity {
   
-	private static final String TAG = "MAP acrtivity";
+	private static final String TAG = "MAP activity";
 	protected LocationRequest mLocationRequest;
 	protected Location mCurrentLocation;
 	protected GoogleMap map;
 	protected Polyline CurrentRoute = null;
 	protected LatLng selectedMarker = null;
 	//LatLngBounds.Builder latLngBuilder;
-	  	
 	
 	protected abstract boolean handleMarkerClicked(Marker marker);
 	  
@@ -184,7 +181,6 @@ public abstract class BaseMapActivity extends Activity {
 	        protected void onPostExecute(List<List<HashMap<String, String>>> result) {
 	            ArrayList<LatLng> points = null;
 	            PolylineOptions lineOptions = null;
-	            MarkerOptions markerOptions = new MarkerOptions();
 	 
 	            // Traversing through all the routes
 	            for(int i=0;i<result.size();i++){
@@ -218,15 +214,4 @@ public abstract class BaseMapActivity extends Activity {
 	        }
 	    }
 	  
-	@Override
-	public void onBackPressed() {
-		
-//		if(slidingUpPanelLayout.getPanelState().equals(PanelState.ANCHORED)){
-//			slidingUpPanelLayout.setPanelState(PanelState.COLLAPSED);
-//		}else{
-//			super.onBackPressed();
-//		}
-	}
-	
-	
 }

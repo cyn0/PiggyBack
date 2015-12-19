@@ -1,22 +1,8 @@
 package com.example.http;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ArrayAdapter;
-
-import org.apache.http.HttpConnection;
-import org.apache.http.client.HttpClient;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.protocol.HTTP;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.example.datamodel.OfferRide;
-import com.example.testapp.R;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,20 +10,20 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
 import java.io.OutputStream;
 
 /**
  * Created by paln on 28/11/2015.
  */
 public class Httphandler {
-	Context context;
-	private String SERVER_BASE_URL = "http://192.168.1.4:8080";
+	//Context context;
+	private String SERVER_BASE_URL = "http://ec2-54-149-149-26.us-west-2.compute.amazonaws.com:5050";
 	private final String GET_RIDE = "/ride";
     private final String POST_OFFERED_RIDE = "/ride";
     
 	private String TAG = "Http error";
 	private HttpDataListener mHttpDataListener;
+	private static Httphandler mInstance;
 	
 	public interface HttpDataListener{
 		public void onDataAvailable(String response);
@@ -45,27 +31,32 @@ public class Httphandler {
 		public void onError(Exception e);
 	}
 	
-	public Httphandler(Context context, HttpDataListener dataListener){
-		this.context = context;
-		mHttpDataListener = dataListener;
+	public static Httphandler getSharedInstance(){
+		return mInstance;
+	}
+	
+	public static void setSharedInstance(Httphandler httphandler){
+		mInstance = httphandler;
 	}
 
-	public void getRide(String ride_id){
+	public void getRide(String ride_id, HttpDataListener dataListener){
 		final String url = SERVER_BASE_URL + GET_RIDE + "/" + ride_id;
-		new AsyncHttpTask().execute(url, GET_RIDE, "GET");
+		this.mHttpDataListener = dataListener;
+		new AsyncHttpTask().execute(url, "GET");
 	}
 
     
-    public void postNewRide(OfferRide mOfferRide){
+    public void postNewRide(OfferRide mOfferRide, HttpDataListener dataListener){
         final String url = SERVER_BASE_URL + POST_OFFERED_RIDE;
-        
-        new AsyncHttpTask().execute(url, POST_OFFERED_RIDE, "POST", mOfferRide.toJSON().toString());
+        this.mHttpDataListener = dataListener;
+        new AsyncHttpTask().execute(url, "POST", mOfferRide.toJSON().toString());
     }
 
     
 	public class AsyncHttpTask extends AsyncTask<String, Void, Integer> {
 
 		String response;
+
 		@Override
 		protected Integer doInBackground(String... params) {
 			InputStream inputStream = null;
@@ -74,8 +65,7 @@ public class Httphandler {
 			try {
                 /* forming th java.net.URL object */
 				URL url = new URL(params[0]);
-				String type = params[1];
-				String httpMethod = params[2];
+				String httpMethod = params[1];
 				urlConnection = (HttpURLConnection) url.openConnection();
 
                  /* optional request header */
@@ -88,25 +78,23 @@ public class Httphandler {
                 
 
 				if(httpMethod.equals("POST")){
-	                byte[] outputInBytes = params[3].getBytes("UTF-8");
+	                byte[] outputInBytes = params[2].getBytes("UTF-8");
 	                OutputStream os = urlConnection.getOutputStream();
 	                os.write( outputInBytes );
 	                os.close();
 				}
                 
                 int statusCode = urlConnection.getResponseCode();
-                /* 201 represents HTTP CREATED */
+
                 if (statusCode >= 200 && statusCode < 300) {
                     inputStream = new BufferedInputStream(urlConnection.getInputStream());
                     response = convertInputStreamToString(inputStream);
                     Log.d("response", response);
-                    result = 1; // Successful
-                } else {
-                    result = 0;
+                    
+                    result = 1; 
                 }
                 
 			} catch (Exception e) {
-				mHttpDataListener.onError(e);
 				Log.d(TAG, e.getLocalizedMessage());
 			}
 			return result; //"Failed to fetch data!";
@@ -118,7 +106,7 @@ public class Httphandler {
 			if(result == 1){
 				mHttpDataListener.onDataAvailable(response);
 			}else{
-				Log.e(TAG, "Failed to fetch data!");
+				mHttpDataListener.onError(new Exception("Status code not OK."));
 			}
 		}
 	}

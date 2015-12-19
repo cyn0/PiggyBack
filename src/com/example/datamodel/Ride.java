@@ -159,7 +159,6 @@ public class Ride implements Parcelable{
 			dest.writeDouble(wayPoint.longitude);
 		}
 		
-		Log.d("!!!!!!!!!!!11111111", "successfully wrote super");
 	}
 	
 	public Ride(){}
@@ -194,7 +193,6 @@ public class Ride implements Parcelable{
             longitude = in.readDouble();
             wayPoints.add(new LatLng(latitude, longitude));
         }
-        Log.d("!!!!!!!!!!!11111111", "successfully read super");
     }
 	
 }

@@ -7,11 +7,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-
 import android.util.Log;
-
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 
 public class MapHelper {
 	public static String getDirectionsUrl(LatLng origin,LatLng dest, ArrayList<LatLng> wayPoints){

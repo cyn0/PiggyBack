@@ -1,16 +1,10 @@
 package com.example.testapp;
 
-import java.util.Date;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.example.datamodel.OfferRide;
 import com.example.http.Httphandler;
 import com.example.http.Httphandler.HttpDataListener;
 import com.example.utils.TimeHelper;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -84,9 +78,8 @@ public class RideDetailsFragment extends Fragment {
 				setViews();
 			}
         };
-        Httphandler httphandler = new Httphandler(getActivity(), mDataListener);
-		httphandler.getRide(ride_id);
-		
+        
+		Httphandler.getSharedInstance().getRide(ride_id, mDataListener);
 		
         return view;
     }
@@ -97,23 +90,23 @@ public class RideDetailsFragment extends Fragment {
     	isRecurringTextView.setText("Recurring : " + mOfferRide.isRecurring());
     	isRoundTripTextView.setText("Round Trip : " + mOfferRide.isRoundTrip());
     	
-    	Date date;
-    	date = mOfferRide.getStartTime();
+    	long millis;
+    	millis = mOfferRide.getStartTime();
     	String dateString;
     	
-    	dateString = TimeHelper.TimeToString(date);
+    	dateString = TimeHelper.TimeToString(millis);
     	forwardStartTimeTextView.setText("Forward journey start time : " + dateString);
     	
     	if(mOfferRide.isRoundTrip()){
-	    	date = mOfferRide.getReturnTime();
-	    	dateString = TimeHelper.TimeToString(date);
+    		millis = mOfferRide.getReturnTime();
+	    	dateString = TimeHelper.TimeToString(millis);
 	    	returnStartTimeTextView.setText("Return journey start time : " + dateString);
     	}else {
     		returnStartTimeTextView.setVisibility(View.GONE);
     	}
     	
-    	date = mOfferRide.getStartDate();
-    	dateString = TimeHelper.DateToString(date);
+    	millis = mOfferRide.getStartDate();
+    	dateString = TimeHelper.DateToString(millis);
     	tripStartDateTextView.setText("Trip start date : " + dateString);
     	
     	boolean isPriced = mOfferRide.isPriced();

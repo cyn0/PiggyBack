@@ -84,7 +84,7 @@ public class PlaceArrayAdapter
             Log.i(TAG, "Query completed. Received " + autocompletePredictions.getCount()
                     + " predictions.");
             Iterator<AutocompletePrediction> iterator = autocompletePredictions.iterator();
-            ArrayList resultList = new ArrayList(autocompletePredictions.getCount());
+            ArrayList<PlaceAutocomplete> resultList = new ArrayList<PlaceAutocomplete>(autocompletePredictions.getCount());
             while (iterator.hasNext()) {
                 AutocompletePrediction prediction = iterator.next();
                 resultList.add(new PlaceAutocomplete(prediction.getPlaceId(),

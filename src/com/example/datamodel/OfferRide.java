@@ -1,25 +1,23 @@
 package com.example.datamodel;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import com.example.utils.TimeHelper;
 import com.google.android.gms.maps.model.LatLng;
 
 public class OfferRide extends Ride{
 
-	private Date startDate;
+	private long startDate;
 	
-	private Date startTime;
+	private long startTime;
 	
-	private Date returnTime;
+	private long returnTime;
 	
 	private double price = 0;
 	
@@ -27,27 +25,27 @@ public class OfferRide extends Ride{
 
 	public OfferRide(){}
 	
-	public Date getStartDate() {
+	public long getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(Date startDate) {
+	public void setStartDate(long startDate) {
 		this.startDate = startDate;
 	}
 
-	public Date getStartTime() {
+	public long getStartTime() {
 		return startTime;
 	}
 
-	public void setStartTime(Date startTime) {
+	public void setStartTime(long startTime) {
 		this.startTime = startTime;
 	}
 
-	public Date getReturnTime() {
+	public long getReturnTime() {
 		return returnTime;
 	}
 
-	public void setReturnTime(Date returnTime) {
+	public void setReturnTime(long returnTime) {
 		this.returnTime = returnTime;
 	}
 	
@@ -140,8 +138,7 @@ public class OfferRide extends Ride{
 			mOfferRide.setDestinationId(destination.getString("id"));
 			mOfferRide.setDestinationAddress(destination.getString("address"));
 
-			SimpleDateFormat format;
-			Date newDate;
+			long newDate;
 			
 			String start_date = root.getString("start_date");
 			newDate = TimeHelper.StringToDateServerFormat(start_date);
@@ -173,16 +170,15 @@ public class OfferRide extends Ride{
 	public void writeToParcel(Parcel dest, int flags) {
 		super.writeToParcel(dest, flags);
 		
-		dest.writeLong(startDate.getTime());
-		dest.writeLong(startTime.getTime());
-		dest.writeLong(returnTime.getTime());
+		dest.writeLong(startDate);
+		dest.writeLong(startTime);
+		dest.writeLong(returnTime);
 		
 		dest.writeDouble(price);
 		
 		boolean val[] = new boolean[1];
 		val[0] = isPriced;
 		dest.writeBooleanArray(val);
-		Log.d("!!!!!!!!!!!11111111", "successfully wrote ");
 	}
 	
 	public static final Parcelable.Creator<OfferRide> CREATOR = new Parcelable.Creator<OfferRide>() {
@@ -200,22 +196,18 @@ public class OfferRide extends Ride{
     	super(in);
     	long time;
     	time = in.readLong();
-    	startDate = new Date(); 
-    	startDate.setTime(time);
+    	startDate= time;
     	
     	time = in.readLong();
-    	startTime = new Date();
-    	startTime.setTime(time);
+    	startTime = time;
     	
     	time = in.readLong();
-    	returnTime = new Date();
-    	returnTime.setTime(time);
+    	returnTime = time;
     	
     	price = in.readDouble();
     	
     	boolean val[] = new boolean[1];
     	in.readBooleanArray(val);
     	isPriced = val[0];
-    	
     }
 }

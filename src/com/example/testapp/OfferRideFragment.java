@@ -5,6 +5,7 @@ import com.example.autocomplete.PlaceArrayAdapter;
 import com.example.autocomplete.MyAutoComplete.AutoCompleteListener;
 import com.example.autocomplete.PlaceArrayAdapter.PlaceAutocomplete;
 import com.example.datamodel.OfferRide;
+import com.example.utils.Constants;
 //import com.example.dm.DummyCurrentRide;
 //import com.example.dm.DummyRides;
 //import com.example.dm.IMapMarker;

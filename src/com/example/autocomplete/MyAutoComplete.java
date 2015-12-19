@@ -24,7 +24,7 @@ public class MyAutoComplete implements
 	GoogleApiClient.ConnectionCallbacks{
 	
 	private static final String LOG_TAG = "MainActivity";
-    private static final int GOOGLE_API_CLIENT_ID = 0;
+//    private static final int GOOGLE_API_CLIENT_ID = 0;
     private AutoCompleteTextView mAutocompleteTextView;
     private GoogleApiClient mGoogleApiClient;
     private PlaceArrayAdapter mPlaceArrayAdapter;

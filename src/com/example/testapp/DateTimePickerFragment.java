@@ -1,26 +1,16 @@
 package com.example.testapp;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.example.autocomplete.PlaceArrayAdapter;
 import com.example.datamodel.OfferRide;
-import com.example.http.Httphandler;
-import com.example.http.Httphandler.HttpDataListener;
+import com.example.utils.Constants;
 import com.example.utils.TimeHelper;
-//import com.example.dm.DummyCurrentRide;
-//import com.example.dm.DummyRides;
-//import com.example.dm.IMapMarker;
-//import com.example.dm.Ride;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
@@ -30,8 +20,6 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +30,6 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 public class DateTimePickerFragment extends Fragment {
     // Store instance variables
@@ -120,9 +107,9 @@ public class DateTimePickerFragment extends Fragment {
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
 
                     	Date d = new Date(0,0,0,selectedHour, selectedMinute);
-                    	mOfferRide.setStartTime(d);
+                    	mOfferRide.setStartTime(d.getTime());
                     	
-                    	String time = TimeHelper.TimeToString(d);
+                    	String time = TimeHelper.TimeToString(d.getTime());
                     	setStartTimeEditText.setText( time);
                     }
                 }, hour, minute, true);//Yes 24 hour time
@@ -145,9 +132,9 @@ public class DateTimePickerFragment extends Fragment {
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
 
                     	Date d = new Date(0,0,0,selectedHour, selectedMinute);
-                    	mOfferRide.setReturnTime(d);
+                    	mOfferRide.setReturnTime(d.getTime());
                     	
-                    	String time = TimeHelper.TimeToString(d);
+                    	String time = TimeHelper.TimeToString(d.getTime());
                     	setReturnTimeEditText.setText(time);
 
                     }
@@ -231,36 +218,6 @@ public class DateTimePickerFragment extends Fragment {
 //			    	
 //	        	} 
 //	        	
-//				HttpDataListener mDataListener = new HttpDataListener() {				
-//					@Override
-//					public void onError(Exception e) {			
-//						Toast.makeText(getActivity(), "Something went wrong. Please try after some time", Toast.LENGTH_LONG).show();
-//					}
-//					
-//					@Override
-//					public void onDataAvailable(String response) {
-//						try{
-//								JSONObject jsonResponse = new JSONObject(response);
-//								boolean success = jsonResponse.getBoolean("success");
-//								if(success){
-//									String ride_id = jsonResponse.getString("ride_id");
-//									String share_text = getString(R.string.share_text);
-//									Intent sendIntent = new Intent();
-//									sendIntent.setAction(Intent.ACTION_SEND);
-//									
-//									sendIntent.putExtra(Intent.EXTRA_TEXT, share_text +" http://ShareDrive.com/" + ride_id);
-//									sendIntent.setType("text/plain");
-//									startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.share_with)));
-//									
-//								}
-//						}catch (JSONException e){
-//							e.printStackTrace();
-//						}
-//					}
-//				};
-//				
-//				Httphandler httphandler = new Httphandler(getActivity(), mDataListener);
-//				httphandler.postNewRide(mOfferRide);
 				
 				Intent myIntent = new Intent(getActivity(), MapActivity.class);
 				myIntent.putExtra(Constants.OFFER_RIDE_OBJECT, (Parcelable) mOfferRide);
@@ -286,12 +243,11 @@ public class DateTimePickerFragment extends Fragment {
 		
 		public void onDateSet(DatePicker view, int year, int month, int day) {
 			
-			//TO-DO : research on storing date
-			Date d = new Date(year-1900, month, day);
-			
-			String  date = TimeHelper.DateToString(d);
+			Calendar c = Calendar.getInstance();
+			c.set(year, month, day);
+			String  date = TimeHelper.DateToString(c.getTimeInMillis());
 			setStartDateEditText.setText(date);
-			mOfferRide.setStartDate(d);
+			mOfferRide.setStartDate(c.getTimeInMillis());
 		}
 	}
     
