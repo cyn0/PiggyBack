@@ -12,6 +12,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 //Parcelable vs serializable
 public class Ride implements Parcelable{
+	
+	public enum RIDE_TYPE {
+		OFFER,
+		FIND
+	}
+	
 	private String sourceAddress;
 	
 	private String destinationAddress;

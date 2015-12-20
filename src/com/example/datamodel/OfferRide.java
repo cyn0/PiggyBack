@@ -1,7 +1,9 @@
 package com.example.datamodel;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -76,14 +78,14 @@ public class OfferRide extends Ride{
 			root.put("is_round_trip", isRoundTrip());
 			
 			JSONObject source = new JSONObject();
-			source.put("latitude", getSource().latitude);
-			source.put("longitude", getSource().longitude);
+			source.put(KEY_LATITUDE, getSource().latitude);
+			source.put(KEY_LONGITUDE, getSource().longitude);
 			source.put("id", getSourceId());
 			source.put("address", getSourceAddress());
 			
 			JSONObject destination = new JSONObject();
-			destination.put("latitude", getDestination().latitude);
-			destination.put("longitude", getDestination().longitude);
+			destination.put(KEY_LATITUDE, getDestination().latitude);
+			destination.put(KEY_LONGITUDE, getDestination().longitude);
 			destination.put("id", getDestinationId());
 			destination.put("address", getDestinationAddress());
 			
@@ -106,6 +108,18 @@ public class OfferRide extends Ride{
 			root.put("is_priced", isPriced);
 			root.put("price", getPrice());
 			
+			JSONArray wayPoints = new JSONArray();
+			ArrayList<LatLng> wp = getWayPoints();
+			for(LatLng w : wp){
+				JSONObject wayPoint = new JSONObject();
+				wayPoint.put(KEY_LATITUDE, w.latitude);
+				wayPoint.put(KEY_LONGITUDE, w.longitude);
+				
+				wayPoints.put(wayPoint);
+			}
+			
+			root.put("waypoints", wayPoints);
+			
 			return root;
 		}catch (JSONException e) {
 			// TODO Auto-generated catch block
@@ -122,18 +136,20 @@ public class OfferRide extends Ride{
 			mOfferRide.setRecurring(root.getBoolean("is_recurring"));
 			mOfferRide.setRoundTrip(root.getBoolean("is_round_trip"));
 			
+			double temp_lat, temp_long;
+			
 			JSONObject source = root.getJSONObject("source");
-			double source_latitude = source.getDouble("latitude");
-			double source_longitude = source.getDouble("longitude");
-			LatLng sourceLatLng = new LatLng(source_latitude, source_longitude);
+			temp_lat = source.getDouble(KEY_LATITUDE);
+			temp_long = source.getDouble(KEY_LONGITUDE);
+			LatLng sourceLatLng = new LatLng(temp_lat, temp_long);
 			mOfferRide.setSource(sourceLatLng);
 			mOfferRide.setSourceId(source.getString("id"));
 			mOfferRide.setSourceAddress(source.getString("address"));
 			
 			JSONObject destination = root.getJSONObject("destination");
-			double destination_latitude = destination.getDouble("latitude");
-			double destination_longitude = destination.getDouble("longitude");
-			LatLng destinationLatLng = new LatLng(destination_latitude, destination_longitude);
+			temp_lat = destination.getDouble(KEY_LATITUDE);
+			temp_long = destination.getDouble(KEY_LONGITUDE);
+			LatLng destinationLatLng = new LatLng(temp_lat, temp_long);
 			mOfferRide.setDestination(destinationLatLng);
 			mOfferRide.setDestinationId(destination.getString("id"));
 			mOfferRide.setDestinationAddress(destination.getString("address"));
@@ -159,6 +175,14 @@ public class OfferRide extends Ride{
 				mOfferRide.setPrice(root.getDouble("price"));
 			}
 			
+			JSONArray wp = root.getJSONArray("waypoints");
+			int length = wp.length();
+			
+			for(int i=0; i < length; i++){
+				JSONObject w = wp.getJSONObject(i);
+				temp_lat = w.getDouble(KEY_LATITUDE);
+				temp_long = w.getDouble(KEY_LONGITUDE);
+			}
 			return mOfferRide;
 		}catch (JSONException e) {
 			e.printStackTrace();
@@ -210,4 +234,7 @@ public class OfferRide extends Ride{
     	in.readBooleanArray(val);
     	isPriced = val[0];
     }
+    
+    private static String KEY_LATITUDE = "latitude";
+    private static String KEY_LONGITUDE = "longitude";
 }

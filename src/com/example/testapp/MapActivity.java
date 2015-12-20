@@ -1,8 +1,12 @@
 package com.example.testapp;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.location.Location;
@@ -16,6 +20,7 @@ import android.widget.Toast;
 
 import com.example.datamodel.OfferRide;
 import com.example.datamodel.Ride;
+import com.example.datamodel.Ride.RIDE_TYPE;
 import com.example.http.Httphandler;
 import com.example.http.Httphandler.HttpDataListener;
 import com.example.map.BaseMapActivity;
@@ -48,7 +53,7 @@ public class MapActivity extends BaseMapActivity{
 	TextView SlidingPanelTitle;
 	protected Button shareButton, editButton;
 	
-	
+	private RIDE_TYPE RideType;
 	protected void  showSlidingPanelWithTitle(String title) {
 //		slidingUpPanelLayout.setPanelState(PanelState.COLLAPSED);
 //		
@@ -57,21 +62,36 @@ public class MapActivity extends BaseMapActivity{
 //		}
 	}
 	
-	protected boolean handleMarkerClicked(Marker marker){
+//	protected void addWayPoint(LatLng point){
+//		
+//	}
+//	
+//	protected void removeWayPoint(LatLng point){
+//		
+//	}
+
+	protected void addWayPoint(LatLng point){
+		Marker marker = addMarker(point);
+		marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.waypoint_marker));		
+		mRide.addWayPoint(marker.getPosition());
+		refreshRoute();
+	}
+	
+	protected void removeWayPoint(Marker marker){
 		if(mRide.getWayPoints().contains(marker.getPosition())){
 			marker.remove();
 			mRide.removeWayPoint(marker.getPosition());
-			drawRoute(mRide.getSource(), mRide.getDestination(), mRide.getWayPoints());
+			refreshRoute();
 		}
+	}
+	
+	protected boolean handleMarkerClicked(Marker marker){
+		removeWayPoint(marker);
 		return true;
 	}
 	  
 	protected void handleMapLongPressed(LatLng point){
-		Marker marker = addMarker(point);
-		marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.waypoint_marker));
-		
-		mRide.addWayPoint(marker.getPosition());
-		drawRoute(mRide.getSource(), mRide.getDestination(), mRide.getWayPoints());
+		addWayPoint(point);
 	}
 	  
 	protected void handleMapClicked(LatLng point){
@@ -79,15 +99,28 @@ public class MapActivity extends BaseMapActivity{
 	}
 	
 	protected void handleOnMapLoaded(){
-		drawRoute(mRide.getSource(), mRide.getDestination(), mRide.getWayPoints());
-		refreshMapBoundary();
+		if(RideType == RideType.OFFER){
+			refreshRoute();
+			refreshMapBoundary();
+		} 
+		
 	}
 	  
 	protected void refreshMapBoundary(){
-	    LatLngBounds bounds = latLngBuilder.build();
+		LatLng source = mRide.getSource();
+		LatLng destination = mRide.getDestination();
 		
-		int padding = 0; // offset from edges of the map in pixels
-		CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 200);
+		latLngBuilder = new LatLngBounds.Builder();
+		latLngBuilder.include(source);
+		latLngBuilder.include(destination);
+	    
+		for(LatLng waypoint : mRide.getWayPoints()){
+			latLngBuilder.include(waypoint);
+		}
+		LatLngBounds bounds = latLngBuilder.build();
+		
+		int padding = 200; // offset from edges of the map in pixels
+		CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
 		map.moveCamera(cu);
 	}
 	  
@@ -110,6 +143,8 @@ public class MapActivity extends BaseMapActivity{
 	  protected void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
 			setContentView(R.layout.activity_map);
+			map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+			slidingUpPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
 			
 			mRide = (Ride) getIntent().getParcelableExtra(Constants.OFFER_RIDE_OBJECT);
 //			mRide = new OfferRide();
@@ -127,8 +162,17 @@ public class MapActivity extends BaseMapActivity{
 //			mOfferRide.setStartTime(new Date(0, 0, 0, 8, 30));
 //			mOfferRide.setReturnTime(new Date(0, 0, 0, 19, 30));
 			
-			setViews();
-			
+			//TO-do this is the way to differentiate?
+			//if(mRide == null){
+		    final String action = getIntent().getAction();
+		    if (Intent.ACTION_VIEW.equals(action)) {
+				fetchRideDetails();
+				RideType = RIDE_TYPE.FIND;
+			} else {
+				RideType = RIDE_TYPE.OFFER;
+				setViews();
+				doInitialMapSetUps();
+			}
 			
 			//map.moveCamera(CameraUpdateFactory.newLatLngZoom(rides.get(0).getSource().getPosition(), 15));
 					
@@ -145,7 +189,6 @@ public class MapActivity extends BaseMapActivity{
 			
 			setMapListeners();
 			
-			doInitialMapSetUps();
 //			slidingUpPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
 //			slidingUpPanelLayout.setPanelState(PanelState.HIDDEN);
 //	        
@@ -175,20 +218,34 @@ public class MapActivity extends BaseMapActivity{
 		
 		addMarker(source);
 		addMarker(destination);
-		//drawRoute(source, destination, mRide.getWayPoints());
+		//refreshRoute(source, destination, mRide.getWayPoints());
 		
-		latLngBuilder = new LatLngBounds.Builder();
-		latLngBuilder.include(source);
-		latLngBuilder.include(destination);
+		
 	}
 	
 	public void setViews(){
-		map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
-		slidingUpPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
 		
 		SlidingPanelTitle = (TextView)findViewById(R.id.SlidingPanelTitle);
 		shareButton = (Button)findViewById(R.id.share);
 		editButton = (Button) findViewById(R.id.edit);
+		TextView sourceAddress = (TextView)findViewById(R.id.sourceAddress);
+		TextView destinationAddress = (TextView)findViewById(R.id.destinationAddress);
+		TextView wayPoints = (TextView)findViewById(R.id.wayPoints);
+		
+		switch(RideType){
+			case OFFER:
+				SlidingPanelTitle.setText("MY RIDE");
+				editButton.setText("EDIT");
+				break;
+			
+			case FIND:
+				SlidingPanelTitle.setText("OFFERED RIDE");
+				editButton.setText("ACCEPT");
+				break;
+		}
+		String text = "";
+//		ArrayList<La>mRide.getWayPoints();
+		wayPoints.setText(text);
 		editButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -203,8 +260,6 @@ public class MapActivity extends BaseMapActivity{
 			}
 		});
 		
-		TextView sourceAddress = (TextView)findViewById(R.id.sourceAddress);
-		TextView destinationAddress = (TextView)findViewById(R.id.destinationAddress);
 		
 		sourceAddress.setText(mRide.getSourceAddress());
 		destinationAddress.setText(mRide.getDestinationAddress());
@@ -239,15 +294,15 @@ public class MapActivity extends BaseMapActivity{
 	}
 	
 	public void handleShareButtonClicked(){
-		final ProgressDialog progress = ProgressDialog.show(this, "dialog title",
-			    "dialog message", true);
+		final ProgressDialog progress = ProgressDialog.show(this, getString(R.string.server_request_dialog_title),
+			    getString(R.string.server_request_dialog_title), true);
 		HttpDataListener mDataListener = new HttpDataListener() {				
 			@Override
 			public void onError(Exception e) {			
 				//Toast.makeText(getApplicationContext(), "Something went wrong. Please try after some time", Toast.LENGTH_LONG).show();
 				Log.e(TAG , e.getLocalizedMessage());
 				progress.dismiss();
-				Toast.makeText(getApplicationContext(), "Unable to reach server", Toast.LENGTH_LONG).show();
+				Toast.makeText(getApplicationContext(), getString(R.string.internet_error), Toast.LENGTH_LONG).show();
 			}
 			
 			@Override
@@ -261,7 +316,7 @@ public class MapActivity extends BaseMapActivity{
 							progress.dismiss();
 						} else {
 							progress.dismiss();
-							Toast.makeText(getApplicationContext(), "Something went wrong. Please try after some time", Toast.LENGTH_LONG).show();
+							Toast.makeText(getApplicationContext(), getString(R.string.server_error), Toast.LENGTH_LONG).show();
 						}
 				}catch (JSONException e){
 					e.printStackTrace();
@@ -284,5 +339,50 @@ public class MapActivity extends BaseMapActivity{
 		sendIntent.putExtra(Intent.EXTRA_TEXT, message);
 		sendIntent.setType("text/plain");
 		startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.share_with)));
+	}
+	
+	public void fetchRideDetails(){
+		final Intent intent = getIntent();
+		final ProgressDialog progress = ProgressDialog.show(this, getString(R.string.server_request_dialog_title),
+			    getString(R.string.server_request_dialog_message), true);
+	    	//You will probably want to use intent.getDataString() rather than getData() if you care about the full URL including the querystring.
+	    final List<String> segments = intent.getData().getPathSegments();
+	    if (segments.size() > 0) {
+	       	String ride_id = segments.get(0);
+	        HttpDataListener mDataListener = new HttpDataListener() {				
+				@Override
+				public void onError(Exception e) {
+					//Hide the sliding layout
+					slidingUpPanelLayout.setPanelState(PanelState.HIDDEN);
+					progress.dismiss();
+					new AlertDialog.Builder(MapActivity.this)
+					    .setTitle("Error!")
+					    .setCancelable(false)
+					    .setMessage(getString(R.string.internet_error))
+					    .setIcon(android.R.drawable.ic_dialog_alert)
+					    .show();
+					Toast.makeText(getApplicationContext(), getString(R.string.internet_error), Toast.LENGTH_LONG).show();
+					
+					
+				}
+				
+				@Override
+				public void onDataAvailable(String response) {
+					mRide = OfferRide.fromString(response);
+					progress.dismiss();
+					setViews();
+					doInitialMapSetUps();
+					refreshRoute();
+					refreshMapBoundary();
+				}
+	        };
+	        Httphandler.setSharedInstance(new Httphandler());
+			Httphandler.getSharedInstance().getRide(ride_id, mDataListener);
+	    }
+	}
+	
+	private void refreshRoute(){
+		drawRoute(mRide.getSource(), mRide.getDestination(), mRide.getWayPoints());
+		refreshMapBoundary();
 	}
 }

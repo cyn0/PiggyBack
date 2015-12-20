@@ -273,6 +273,32 @@
 	                
 	            </LinearLayout>	            	             
 
+	           	<LinearLayout
+		                android:layout_width="match_parent"
+		                android:layout_height="wrap_content"
+		                android:orientation="horizontal">
+
+					 <TextView
+		                    android:layout_width="0dp"
+		                    android:layout_height="wrap_content"
+		                    android:layout_weight="1"
+		                    android:textSize="14sp"
+		                    android:text="Via :"
+		                    android:gravity="center_vertical"
+		                    android:paddingLeft="10dp"/> 
+		                    
+					 <TextView
+		                    android:id="@+id/wayPoints"
+		                    android:layout_width="0dp"
+		                    android:layout_height="wrap_content"
+		                    android:layout_weight="1"
+		                    android:textSize="14sp"
+		                    android:text="details here"
+		                    android:gravity="center_vertical"
+		                    android:paddingLeft="10dp"/> 
+	                
+	            </LinearLayout>	   
+	            
 	            <LinearLayout
 		                android:layout_width="match_parent"
 		                android:layout_height="wrap_content"
