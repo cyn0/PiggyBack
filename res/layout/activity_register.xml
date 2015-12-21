@@ -1,0 +1,61 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" android:background="#ffffff"
+    >
+<LinearLayout 
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" android:background="#ffffff"
+    >
+
+    
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_gravity="right|bottom"
+        android:orientation="vertical"
+        android:paddingLeft="7dp"
+        android:paddingTop="7dp"
+        android:paddingRight="7dp" >
+		
+        <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Welcome_title"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        android:gravity="right|bottom"
+        android:orientation="vertical" >
+
+       
+        <Button
+            android:id="@+id/btnGCMRegister"
+            android:layout_width="133dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dip"
+            android:text="Get started"
+            android:textColor="#ffffff"
+            android:background="#33B5E5" /> 
+    </LinearLayout>
+    <ListView
+        android:id="@+id/left_drawer"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp"
+        android:background="#111"/>
+
+</LinearLayout>
+</ScrollView>

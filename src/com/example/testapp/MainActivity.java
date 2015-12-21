@@ -3,6 +3,7 @@ package com.example.testapp;
 import java.util.List;
 
 import com.example.http.Httphandler;
+import com.example.utils.Constants;
 
 import android.app.Activity;
 import android.support.v7.app.ActionBarActivity;
@@ -10,13 +11,17 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import android.text.TextUtils;
 
 public class MainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -39,7 +44,7 @@ public class MainActivity extends ActionBarActivity implements
 		setContentView(R.layout.activity_main);
 
 		startApplicationComponents();
-		
+		checkGCMRegistrationId();
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.navigation_drawer);
 		mTitle = getTitle();
@@ -179,5 +184,28 @@ public class MainActivity extends ActionBarActivity implements
 	public void startApplicationComponents(){
 		Httphandler.setSharedInstance(new Httphandler());
 	}
-
+	
+	private void checkGCMRegistrationId(){
+		String registrationId = getSharedPreferences(Constants.APP_SETTINGS, MODE_PRIVATE).getString(Constants.GCM_ID, "");
+		if (TextUtils.isEmpty(registrationId)) {
+			Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
+			startActivity(intent);
+		}
+//		int registeredVersion = getSharedPreferences(Constants.APP_SETTINGS, MODE_PRIVATE).getInt(Constants.APP_VERSION, Integer.MIN_VALUE);
+//		int currentVersion = getAppVersion(getApplicationContext());
+//		if (registeredVersion != currentVersion) {
+//			Log.i(TAG, "App version changed.");
+//			return "";
+//		}
+		
+//		try {
+//			PackageInfo packageInfo = context.getPackageManager()
+//					.getPackageInfo(context.getPackageName(), 0);
+//			return packageInfo.versionCode;
+//		} catch (NameNotFoundException e) {
+//			Log.d("RegisterActivity",
+//					"I never expected this! Going down, going down!" + e);
+//			throw new RuntimeException(e);
+//		}
+	}
 }

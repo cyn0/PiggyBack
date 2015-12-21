@@ -11,10 +11,14 @@
     <string name="action_settings">Settings</string>
     <string name="share_with">Share with..</string>
 	<string name="share_text">Hey! I\'m sharing  a ride with you. </string>
-    <string name="internet_error">Unable to reach server. Is connect to internet? </string>
+    <string name="internet_error">Unable to reach server. Is connected to internet? </string>
     <string name="server_error">Something went wrong, please try after sometime </string>
     <string name="server_request_dialog_title"> </string>
     <string name="server_request_dialog_message">Fetching data..</string>
+    <string name="Welcome_title">Add blah, blah and terms, conditions</string>
+    <string name="registration_success">Registration successful ;)</string>
+    <string name="registration_error">Something went wrong, please try after sometime. Is connected to internet?</string>
+    
     
     <string-array name="trip_types">
         <item>Recurring</item>
