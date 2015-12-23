@@ -2,6 +2,8 @@ package com.example.datamodel;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -17,6 +19,9 @@ public class Ride implements Parcelable{
 		OFFER,
 		FIND
 	}
+	private String userId;
+	
+	private String rideId;
 	
 	private String sourceAddress;
 	
@@ -124,6 +129,22 @@ public class Ride implements Parcelable{
 		wayPoints.remove(wayPoint);
 	}
 	
+	public String getRideId() {
+		return rideId;
+	}
+
+	public void setRideId(String rideId) {
+		this.rideId = rideId;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
 	@Override
 	public int describeContents() {
 		// TODO Auto-generated method stub
@@ -167,7 +188,9 @@ public class Ride implements Parcelable{
 		
 	}
 	
-	public Ride(){}
+	public Ride(){
+		
+	}
 	
 	// example constructor that takes a Parcel and gives you an object populated with it's values
     public Ride(Parcel in) {
@@ -201,4 +224,9 @@ public class Ride implements Parcelable{
         }
     }
 	
+
+    protected static String KEY_LATITUDE = "latitude";
+    protected static String KEY_LONGITUDE = "longitude";
+    protected static String KEY_USER_ID = "user_id";
+    protected static String KEY_RIDE_ID = "ride_id";
 }

@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -119,7 +120,8 @@ public class OfferRide extends Ride{
 			}
 			
 			root.put("waypoints", wayPoints);
-			
+			root.put(KEY_USER_ID, User.getSharedInstance().getUserId());
+			root.put(KEY_RIDE_ID, getRideId());
 			return root;
 		}catch (JSONException e) {
 			// TODO Auto-generated catch block
@@ -133,6 +135,8 @@ public class OfferRide extends Ride{
 			OfferRide mOfferRide = new OfferRide();
 			JSONObject root = new JSONObject(input);
 			
+			mOfferRide.setUserId(root.getString(KEY_USER_ID));
+			mOfferRide.setRideId(root.getString("_id"));
 			mOfferRide.setRecurring(root.getBoolean("is_recurring"));
 			mOfferRide.setRoundTrip(root.getBoolean("is_round_trip"));
 			
@@ -235,6 +239,4 @@ public class OfferRide extends Ride{
     	isPriced = val[0];
     }
     
-    private static String KEY_LATITUDE = "latitude";
-    private static String KEY_LONGITUDE = "longitude";
 }

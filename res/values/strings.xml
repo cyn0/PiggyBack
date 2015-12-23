@@ -18,7 +18,8 @@
     <string name="Welcome_title">Add blah, blah and terms, conditions</string>
     <string name="registration_success">Registration successful ;)</string>
     <string name="registration_error">Something went wrong, please try after sometime. Is connected to internet?</string>
-    
+    <string name="accept_success">Ride successfully accepted</string>
+    <string name="accept_error">Something went wrong, please try after sometime. Is connected to internet?</string>
     
     <string-array name="trip_types">
         <item>Recurring</item>

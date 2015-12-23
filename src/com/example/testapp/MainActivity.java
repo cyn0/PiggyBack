@@ -2,6 +2,7 @@ package com.example.testapp;
 
 import java.util.List;
 
+import com.example.datamodel.User;
 import com.example.http.Httphandler;
 import com.example.utils.Constants;
 
@@ -10,10 +11,12 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,6 +29,8 @@ import android.text.TextUtils;
 public class MainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks {
 
+	private static final String TAG = "MainActivity";
+	public static Context mContext;
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the
 	 * navigation drawer.
@@ -43,6 +48,7 @@ public class MainActivity extends ActionBarActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		mContext = getApplicationContext();
 		startApplicationComponents();
 		checkGCMRegistrationId();
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
@@ -186,10 +192,12 @@ public class MainActivity extends ActionBarActivity implements
 	}
 	
 	private void checkGCMRegistrationId(){
-		String registrationId = getSharedPreferences(Constants.APP_SETTINGS, MODE_PRIVATE).getString(Constants.GCM_ID, "");
-		if (TextUtils.isEmpty(registrationId)) {
+		boolean registrationSucsess = User.getSharedInstance().getRegistrationStatus();
+		if (!registrationSucsess) {
 			Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
 			startActivity(intent);
+			Log.d(TAG, "Registration not done");
+			
 		}
 //		int registeredVersion = getSharedPreferences(Constants.APP_SETTINGS, MODE_PRIVATE).getInt(Constants.APP_VERSION, Integer.MIN_VALUE);
 //		int currentVersion = getAppVersion(getApplicationContext());

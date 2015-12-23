@@ -1,8 +1,15 @@
 package com.example.http;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.example.datamodel.AcceptRide;
 import com.example.datamodel.OfferRide;
+import com.example.datamodel.Ride;
+import com.example.datamodel.User;
+import com.example.utils.CommonUtil;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,6 +27,8 @@ public class Httphandler {
 	private String SERVER_BASE_URL = "http://ec2-54-149-149-26.us-west-2.compute.amazonaws.com:5050";
 	private final String GET_RIDE = "/ride";
     private final String POST_OFFERED_RIDE = "/ride";
+    private final String POST_ACCEPT_RIDE = "/ride/accept";
+    private final String POST_REGISTER = "/register";
     
 	private String TAG = "Http error";
 	private HttpDataListener mHttpDataListener;
@@ -50,6 +59,18 @@ public class Httphandler {
         final String url = SERVER_BASE_URL + POST_OFFERED_RIDE;
         this.mHttpDataListener = dataListener;
         new AsyncHttpTask().execute(url, "POST", mOfferRide.toJSON().toString());
+    }
+    
+    public void acceptRide(OfferRide mRide, HttpDataListener dataListener){
+        final String url = SERVER_BASE_URL + POST_ACCEPT_RIDE;
+        this.mHttpDataListener = dataListener;
+        new AsyncHttpTask().execute(url, "POST", mRide.toJSON().toString());
+    }
+    
+    public void register(HttpDataListener dataListener){
+    	final String url = SERVER_BASE_URL + POST_REGISTER;
+    	this.mHttpDataListener = dataListener;
+    	new AsyncHttpTask().execute(url, "POST", User.getSharedInstance().toString());
     }
 
     
@@ -83,7 +104,7 @@ public class Httphandler {
 	                os.write( outputInBytes );
 	                os.close();
 				}
-                
+				Log.d("Request url", url.toString());
                 int statusCode = urlConnection.getResponseCode();
 
                 if (statusCode >= 200 && statusCode < 300) {

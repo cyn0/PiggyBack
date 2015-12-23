@@ -8,9 +8,11 @@ import org.json.JSONObject;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -18,6 +20,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.datamodel.AcceptRide;
 import com.example.datamodel.OfferRide;
 import com.example.datamodel.Ride;
 import com.example.datamodel.Ride.RIDE_TYPE;
@@ -41,6 +44,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState;
 public class MapActivity extends BaseMapActivity{
   
 	private static final String TAG = "MAP acrtivity";
+	public static Context mContext;
 	protected Location mCurrentLocation;
 	protected Polyline CurrentRoute = null;
 	protected LatLng selectedMarker = null;
@@ -54,6 +58,7 @@ public class MapActivity extends BaseMapActivity{
 	protected Button shareButton, editButton;
 	
 	private RIDE_TYPE RideType;
+	
 	protected void  showSlidingPanelWithTitle(String title) {
 //		slidingUpPanelLayout.setPanelState(PanelState.COLLAPSED);
 //		
@@ -143,6 +148,7 @@ public class MapActivity extends BaseMapActivity{
 	  protected void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
 			setContentView(R.layout.activity_map);
+			mContext = getApplicationContext();
 			map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
 			slidingUpPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
 			
@@ -294,6 +300,66 @@ public class MapActivity extends BaseMapActivity{
 	}
 	
 	public void handleShareButtonClicked(){
+		
+		switch(RideType){
+		case OFFER:
+			if(TextUtils.isEmpty(mRide.getRideId())){
+				postRideDetails();
+			} else{
+				shareMessage(mRide.getRideId());
+			}
+			break;
+		
+		case FIND:
+			acceptRide();
+			break;
+		}
+		
+	}
+	
+	
+	public void shareMessage(String ride_id){
+		String message =  getString(R.string.share_text);
+		message += " http://ShareDrive.com/" + ride_id;
+		
+		Intent sendIntent = new Intent();
+		sendIntent.setAction(Intent.ACTION_SEND);
+		sendIntent.putExtra(Intent.EXTRA_TEXT, message);
+		sendIntent.setType("text/plain");
+		startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.share_with)));
+	}
+	
+	public void acceptRide(){
+		final ProgressDialog progress = ProgressDialog.show(this, getString(R.string.server_request_dialog_title),
+			    getString(R.string.server_request_dialog_message), true);
+		Httphandler.getSharedInstance().acceptRide((OfferRide)mRide, new HttpDataListener() {
+			
+			@Override
+			public void onError(Exception e) {
+				Log.e(TAG , e.getLocalizedMessage());
+				progress.dismiss();
+				Toast.makeText(getApplicationContext(), getString(R.string.internet_error), Toast.LENGTH_LONG).show();
+			}
+			
+			@Override
+			public void onDataAvailable(String response) {
+				try{
+					progress.dismiss();
+					JSONObject jsonResponse = new JSONObject(response);
+					boolean success = jsonResponse.getBoolean("success");
+					if(success){
+						Toast.makeText(getApplicationContext(), getString(R.string.accept_success), Toast.LENGTH_LONG).show();
+					} else {
+						Toast.makeText(getApplicationContext(), getString(R.string.accept_error), Toast.LENGTH_LONG).show();
+					}
+			}catch (JSONException e){
+				e.printStackTrace();
+			}
+				
+			}
+		});
+	}
+	public void postRideDetails(){
 		final ProgressDialog progress = ProgressDialog.show(this, getString(R.string.server_request_dialog_title),
 			    getString(R.string.server_request_dialog_title), true);
 		HttpDataListener mDataListener = new HttpDataListener() {				
@@ -308,14 +374,14 @@ public class MapActivity extends BaseMapActivity{
 			@Override
 			public void onDataAvailable(String response) {
 				try{
+						progress.dismiss();
 						JSONObject jsonResponse = new JSONObject(response);
 						boolean success = jsonResponse.getBoolean("success");
 						if(success){
 							String ride_id = jsonResponse.getString("ride_id");
+							mRide.setRideId(ride_id);
 							shareMessage(ride_id);
-							progress.dismiss();
 						} else {
-							progress.dismiss();
 							Toast.makeText(getApplicationContext(), getString(R.string.server_error), Toast.LENGTH_LONG).show();
 						}
 				}catch (JSONException e){
@@ -325,27 +391,14 @@ public class MapActivity extends BaseMapActivity{
 		};
 		
 		Httphandler.getSharedInstance().postNewRide((OfferRide)mRide, mDataListener);
-
 	}
 	
-	
-	public void shareMessage(String ride_id){
-		String message =  getString(R.string.share_text);
-		message += " http://ShareDrive.com/" + ride_id;
-		//CommonUtil.shareTextMessage(message, getApplicationContext());
-		
-		Intent sendIntent = new Intent();
-		sendIntent.setAction(Intent.ACTION_SEND);
-		sendIntent.putExtra(Intent.EXTRA_TEXT, message);
-		sendIntent.setType("text/plain");
-		startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.share_with)));
-	}
-	
+	//To-Do handle ride not present case
 	public void fetchRideDetails(){
 		final Intent intent = getIntent();
 		final ProgressDialog progress = ProgressDialog.show(this, getString(R.string.server_request_dialog_title),
 			    getString(R.string.server_request_dialog_message), true);
-	    	//You will probably want to use intent.getDataString() rather than getData() if you care about the full URL including the querystring.
+	    //You will probably want to use intent.getDataString() rather than getData() if you care about the full URL including the querystring.
 	    final List<String> segments = intent.getData().getPathSegments();
 	    if (segments.size() > 0) {
 	       	String ride_id = segments.get(0);
