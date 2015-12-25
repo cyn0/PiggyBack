@@ -26,6 +26,7 @@ public class Httphandler {
 	//Context context;
 	private String SERVER_BASE_URL = "http://ec2-54-149-149-26.us-west-2.compute.amazonaws.com:5050";
 	private final String GET_RIDE = "/ride";
+	private final String GET_USER = "/user";
     private final String POST_OFFERED_RIDE = "/ride";
     private final String POST_ACCEPT_RIDE = "/ride/accept";
     private final String POST_REGISTER = "/register";
@@ -73,6 +74,11 @@ public class Httphandler {
     	new AsyncHttpTask().execute(url, "POST", User.getSharedInstance().toString());
     }
 
+    public void getUser(String user_id, HttpDataListener dataListener){
+		final String url = SERVER_BASE_URL + GET_USER + "/" + user_id;
+		this.mHttpDataListener = dataListener;
+		new AsyncHttpTask().execute(url, "GET");
+	}
     
 	public class AsyncHttpTask extends AsyncTask<String, Void, Integer> {
 

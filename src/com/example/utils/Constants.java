@@ -3,6 +3,7 @@ package com.example.utils;
 public class Constants {
 	
 	public static String OFFER_RIDE_OBJECT = "offer_ride";
+	public static String PAGE = "page";
 	
 	public	static final String GOOGLE_PROJECT_ID = "675435775839";
 	

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.example.datamodel.GcmMessage;
 import com.example.utils.Notification;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
@@ -27,16 +28,11 @@ public class GCMNotificationIntentService extends IntentService {
 		String messageType = gcm.getMessageType(intent);
 
 		if (!extras.isEmpty()) {
-			if (GoogleCloudMessaging.MESSAGE_TYPE_SEND_ERROR
-					.equals(messageType)) {
+			if (GoogleCloudMessaging.MESSAGE_TYPE_SEND_ERROR.equals(messageType)) {
 				Notification.sendNotification("Notification","Send error: " + extras.toString(), this, 1);
-			} else if (GoogleCloudMessaging.MESSAGE_TYPE_DELETED
-					.equals(messageType)) {
-				Notification.sendNotification("Notification","Deleted messages on server: "
-						+ extras.toString(), this, 1);
-			} else if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE
-					.equals(messageType)) {
-
+			} else if (GoogleCloudMessaging.MESSAGE_TYPE_DELETED.equals(messageType)) {
+				Notification.sendNotification("Notification","Deleted messages on server: "	+ extras.toString(), this, 1);
+			} else if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
 				handleGCMMessage(extras);
 				Log.i(TAG, "Received: " + extras.toString());
 			}
@@ -49,18 +45,11 @@ public class GCMNotificationIntentService extends IntentService {
 	
 	 
 	private void handleGCMMessage(Bundle extras){
-		String content = (String)extras.get("msg");
-		String title = (String)extras.get("title");
-		String time = (String)extras.get("time");
-		String msgtype = (String)extras.get("type");
-		//msgtype = msgtype.trim();
-		Log.e("feesd",extras.toString());
-//		Log.d("shared pref", "" + getSharedPreferences(constant.APP_SETTINGS, MODE_PRIVATE).contains(msgtype));
-//		boolean getNotification = getSharedPreferences(constant.APP_SETTINGS, MODE_PRIVATE)
-//				.getBoolean(msgtype, true);
-//		
+		GcmMessage gcmMessage = GcmMessage.parseGcmMessage(extras);
 //		if(getNotification)
-			Notification.sendNotification("Notification", title,this, NOTIFICATION_ID);
+			Notification.sendNotification(gcmMessage.getTitle(), gcmMessage.getMessage(), this, NOTIFICATION_ID);
 	}
+	
+	
 	
 }

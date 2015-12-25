@@ -241,12 +241,14 @@ public class MapActivity extends BaseMapActivity{
 		switch(RideType){
 			case OFFER:
 				SlidingPanelTitle.setText("MY RIDE");
+				shareButton.setText("SHARE");
 				editButton.setText("EDIT");
 				break;
 			
 			case FIND:
 				SlidingPanelTitle.setText("OFFERED RIDE");
-				editButton.setText("ACCEPT");
+				shareButton.setText("ACCEPT");
+				editButton.setText("SHARE");
 				break;
 		}
 		String text = "";
@@ -255,7 +257,18 @@ public class MapActivity extends BaseMapActivity{
 		editButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Toast.makeText(getApplicationContext(), "text", Toast.LENGTH_LONG).show();
+				switch(RideType){
+				case OFFER:
+					Intent intent = new Intent(mContext, MainActivity.class);
+					intent.putExtra(Constants.PAGE, OfferRideFragment.class.getName());
+					startActivity(intent);
+					finish();
+					break;
+				
+				case FIND:
+					shareMessage(mRide.getRideId());
+					break;
+			}
 			}
 		});
 		

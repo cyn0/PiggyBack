@@ -1,9 +1,14 @@
 package com.example.datamodel;
 
+import java.util.ArrayList;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
+import android.net.ParseException;
 import android.util.Log;
 
 import com.example.testapp.MainActivity;
@@ -17,7 +22,13 @@ public class User {
 	final String USER_ID = "user_id";
 	final String GCM_ID = "gcm_id";
 	final String PHONE_NUM = "phone_number";
-	Context mContext;
+	
+	final static String KEY_OFFERED_RIDES = "offered_rides";
+	final static String KEY_ACCEPTED_RIDES = "accepted_rides";
+	
+	ArrayList<OfferRide> mOfferedRides = new ArrayList<OfferRide>();
+	ArrayList<OfferRide> mAcceptedRides = new ArrayList<OfferRide>();
+	
 	public static User getSharedInstance(){
 		return mSharedInstance;
 	}
@@ -30,6 +41,7 @@ public class User {
 			return MapActivity.mContext;
 		}
 	}
+	
 	
 	
 	public String getGCMRegistrationId(){
@@ -83,6 +95,22 @@ public class User {
 		return context.getSharedPreferences(Constants.APP_SETTINGS, context.MODE_PRIVATE).getBoolean(Constants.A_REGISTRATION_STATUS, false);
 	}
 	
+	public void setOfferedRides(ArrayList<OfferRide> rides){
+		this.mOfferedRides = rides;
+	}
+	
+	public void setAcceptedRides(ArrayList<OfferRide> rides){
+		this.mAcceptedRides = rides;
+	}
+	
+	public ArrayList<OfferRide> getOfferedRides(){
+		return this.mOfferedRides;
+	}
+	
+	public ArrayList<OfferRide> getAcceptedRides(){
+		return this.mAcceptedRides;
+	}
+	
 	public String toString(){
 		Context context = getContext();
 		JSONObject root = new JSONObject();
@@ -93,5 +121,35 @@ public class User {
 			e.printStackTrace();
 		}
 		return root.toString();
+	}
+	
+	public static User fromString(String input){
+		User user = new User();
+		try{
+			JSONObject root = new JSONObject(input);
+			
+			JSONArray jsonOfferedRides = root.getJSONArray(KEY_OFFERED_RIDES);
+			ArrayList<OfferRide> offerRides = new ArrayList<OfferRide>();
+			for(int i=0; i<jsonOfferedRides.length(); i++){
+				JSONObject jsonOfferedRide = jsonOfferedRides.getJSONObject(i);
+				OfferRide ride = OfferRide.fromString(jsonOfferedRide.toString());
+				offerRides.add(ride);
+			}
+			user.setOfferedRides(offerRides);
+			
+			JSONArray jsonAcceptedRides = root.getJSONArray(KEY_ACCEPTED_RIDES);
+			ArrayList<OfferRide> acceptRides = new ArrayList<OfferRide>();
+			for(int i=0; i<jsonOfferedRides.length(); i++){
+				JSONObject jsonAcceptRide = jsonAcceptedRides.getJSONObject(i);
+				OfferRide ride = OfferRide.fromString(jsonAcceptRide.toString());
+				acceptRides.add(ride);
+			}
+			user.setAcceptedRides(acceptRides);
+			
+		} catch(JSONException e){
+			e.printStackTrace();
+		}
+		
+		return user;
 	}
 }

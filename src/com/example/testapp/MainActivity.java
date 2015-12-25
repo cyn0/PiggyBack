@@ -23,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
 
@@ -60,20 +61,30 @@ public class MainActivity extends ActionBarActivity implements
 				(DrawerLayout) findViewById(R.id.drawer_layout));
 		
 		final Intent intent = getIntent();
-	    final String action = intent.getAction();
+	    final Bundle extras = intent.getExtras();
 
-	    if (Intent.ACTION_VIEW.equals(action)) {
-	    	//You will probably want to use intent.getDataString() rather than getData() if you care about the full URL including the querystring.
-	        final List<String> segments = intent.getData().getPathSegments();
-	        if (segments.size() > 0) {
-	        	String ride_id = segments.get(0);
-	            FragmentManager fragmentManager = getSupportFragmentManager();
+	    if(extras != null){
+		    String screenName = (String) extras.get(Constants.PAGE);
+		    if(screenName != null && screenName.equals(OfferRideFragment.class.getName())){
+		    	FragmentManager fragmentManager = getSupportFragmentManager();
 	            fragmentManager
 	            	.beginTransaction()
 	            	.replace(R.id.container,
-	            			RideDetailsFragment.newInstance(2, "Offer a ride", ride_id)).commit();
-	        }
+	            			OfferRideFragment.newInstance(2, "Offer a ride")).commit();
+		    }
 	    }
+//	    if (Intent.ACTION_VIEW.equals(action)) {
+//	    	//You will probably want to use intent.getDataString() rather than getData() if you care about the full URL including the querystring.
+//	        final List<String> segments = intent.getData().getPathSegments();
+//	        if (segments.size() > 0) {
+//	        	String ride_id = segments.get(0);
+//	            FragmentManager fragmentManager = getSupportFragmentManager();
+//	            fragmentManager
+//	            	.beginTransaction()
+//	            	.replace(R.id.container,
+//	            			RideDetailsFragment.newInstance(2, "Offer a ride", ride_id)).commit();
+//	        }
+//	    }
 	}
 
 	@Override
@@ -85,7 +96,7 @@ public class MainActivity extends ActionBarActivity implements
 				fragmentManager
 					.beginTransaction()
 					.replace(R.id.container,
-							PlaceholderFragment.newInstance(position + 1)).commit();
+							FeedsFragment.newInstance(1, "My rides")).commit();
 				break;
 			
 			case 1:
