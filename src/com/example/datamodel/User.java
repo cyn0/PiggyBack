@@ -139,7 +139,7 @@ public class User {
 			
 			JSONArray jsonAcceptedRides = root.getJSONArray(KEY_ACCEPTED_RIDES);
 			ArrayList<OfferRide> acceptRides = new ArrayList<OfferRide>();
-			for(int i=0; i<jsonOfferedRides.length(); i++){
+			for(int i=0; i<jsonAcceptedRides.length(); i++){
 				JSONObject jsonAcceptRide = jsonAcceptedRides.getJSONObject(i);
 				OfferRide ride = OfferRide.fromString(jsonAcceptRide.toString());
 				acceptRides.add(ride);

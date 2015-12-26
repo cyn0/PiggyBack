@@ -1,11 +1,17 @@
 package com.example.utils;
 
+import java.util.List;
+import java.util.Locale;
+
 import com.example.datamodel.OfferRide;
 import com.example.testapp.R;
+import com.google.android.gms.maps.model.LatLng;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
+import android.location.Address;
+import android.location.Geocoder;
 
 public class CommonUtil {
 	
@@ -28,6 +34,17 @@ public class CommonUtil {
 		sendIntent.putExtra(Intent.EXTRA_TEXT, message);
 		sendIntent.setType("text/plain");
 		context.startActivity(Intent.createChooser(sendIntent, context.getResources().getText(R.string.share_with)));
+	}
+	
+	public Address getAddress(Context context, LatLng latLng){
+		Geocoder geoCoder = new Geocoder(context, Locale.getDefault());
+		try {
+		    List<Address> address = geoCoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+		    return address.get(0);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	

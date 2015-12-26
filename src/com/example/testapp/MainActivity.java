@@ -5,6 +5,7 @@ import java.util.List;
 import com.example.datamodel.User;
 import com.example.http.Httphandler;
 import com.example.utils.Constants;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState;
 
 import android.app.Activity;
 import android.support.v7.app.ActionBarActivity;
@@ -133,6 +134,11 @@ public class MainActivity extends ActionBarActivity implements
 		actionBar.setTitle(mTitle);
 	}
 
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		
+	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		if (!mNavigationDrawerFragment.isDrawerOpen()) {

@@ -6,14 +6,14 @@
     android:padding="8dp" >
  
      
-    <ImageView
+    <!-- <ImageView
         android:id="@+id/thumbnail"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_alignParentLeft="true"
         android:src="@drawable/icon_car"
         android:layout_marginRight="8dp" />
- 	
+ 	 -->
  	<!-- <ImageView
         android:id="@+id/imageView1"
         android:layout_width="80dp"

@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-
+	
+    <ScrollView 
+      android:id="@+id/sv"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="1">
+      <LinearLayout 
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
     <TextView
         android:id="@+id/source1"
         android:layout_width="match_parent"
@@ -17,21 +28,26 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
         android:orientation="horizontal"
         android:padding="2dp"
+        android:background="#ffffff"
         android:paddingTop="2dp" >
 
         <ImageView
             android:id="@+id/imageView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_launcher" />
+            android:layout_width="30dp"
+			android:layout_height="30dp"
+			android:paddingTop="5dp"
+            android:src="@drawable/test" />
 
         <TextView
             android:id="@+id/source"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Large Text"
+            android:padding="2dp"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
     </LinearLayout>
@@ -40,88 +56,165 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="2dp"
+        android:background="#ffffff"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+	    android:padding="2dp"
         android:paddingTop="2dp" >
 
         <ImageView
             android:id="@+id/imageView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_launcher" />
+            android:layout_width="30dp"
+			android:layout_height="30dp"
+			android:paddingTop="5dp"
+            android:src="@drawable/test" />
 
         <TextView
             android:id="@+id/destination"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Large Text"
+            android:padding="2dp"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
     </LinearLayout>
     
-    <TextView
-        android:id="@+id/tripStartDate"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="tripStartDate"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:orientation="vertical"
+        android:background="#ffffff"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:padding="2dp"
+         >
+	    <TextView
+	        android:id="@+id/tripStartDate"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="tripStartDate"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+    </LinearLayout>
     
-    
-	<TextView
-        android:id="@+id/isRoundTrip"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="isRoundTrip"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
+        android:orientation="vertical"
+        android:background="#ffffff"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:padding="2dp"
+         >
+		<TextView
+	        android:id="@+id/isRoundTrip"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+	</LinearLayout>
+	
+	<LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#ffffff"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:padding="2dp"
+         >
 	<TextView
         android:id="@+id/isRecurring"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="isRecurring"
         android:textAppearance="?android:attr/textAppearanceMedium" />
-	
+	</LinearLayout>
+    
+    
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="2dp"
-        android:paddingTop="2dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="#ffffff"
         >
 
         <TextView
             android:id="@+id/forwardStartTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="forwardStartTime"
             android:textAppearance="?android:attr/textAppearanceMedium" />
         
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/returnStartTime"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="returnStartTime"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
+        android:orientation="vertical"
+        android:background="#ffffff"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:padding="2dp"
+        >
+	    <TextView
+	        android:id="@+id/returnStartTime"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+	</LinearLayout>
+	
+	<LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#ffffff"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:padding="2dp"
+         >
     <TextView
         android:id="@+id/price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="price"
         android:textAppearance="?android:attr/textAppearanceMedium" />
     
-   <Button
-        android:id="@+id/next"
-        android:layout_width="wrap_content"
+   </LinearLayout>
+   
+   
+	<LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/button2"
-        android:layout_gravity="right|bottom"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="41dp"
-        android:layout_toRightOf="@+id/textView2"
+        android:orientation="vertical"
+         >
+	<Button
+        android:id="@+id/next"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
         android:background="#33B5E5"
         android:layout_marginRight="5dp"
         android:text="Accept" />
-
+	 <Button
+        android:id="@+id/negative"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|bottom"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="15dp"
+        android:background="#FF4444"
+        android:layout_marginRight="5dp"
+        android:text="Delete" />
+   </LinearLayout>
+	</LinearLayout>
+    </ScrollView>	
 </LinearLayout>

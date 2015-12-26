@@ -1,27 +1,24 @@
 package com.example.testapp;
 
 import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.autocomplete.MyAutoComplete;
@@ -33,9 +30,6 @@ import com.example.datamodel.User;
 import com.example.feeds.CustomListAdapter;
 import com.example.http.Httphandler;
 import com.example.http.Httphandler.HttpDataListener;
-import com.example.utils.Constants;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBuffer;
 import com.google.android.gms.location.places.ui.PlacePicker;
@@ -50,9 +44,8 @@ public class FeedsFragment extends Fragment {
     AutoCompleteTextView sourceTextView, destinationTextView;
     
     Place source, destination;
-    
     OfferRide mOfferRide;
-    
+    Activity mActivity;
     // newInstance constructor for creating fragment with arguments
     public static FeedsFragment newInstance(int page, String title) {
     	FeedsFragment fragmentFirst = new FeedsFragment();
@@ -71,6 +64,7 @@ public class FeedsFragment extends Fragment {
         title = getArguments().getString("someTitle");
         
         mOfferRide = new OfferRide();
+        mActivity = getActivity();
     }
     
     // Inflate the view for the fragment based on layout XML
@@ -80,13 +74,19 @@ public class FeedsFragment extends Fragment {
         
 
         ListView listView = (ListView) view.findViewById(R.id.list);
-        final ArrayList<OfferRide> ridesList = new ArrayList<>();
-        
-        final CustomListAdapter adapter = new CustomListAdapter(getActivity(), ridesList);
+        listView.setScrollingCacheEnabled(false);
+        final ArrayList<OfferRide> listItems = new ArrayList<OfferRide>();
+        final CustomListAdapter adapter = new CustomListAdapter(getActivity(), listItems);
         listView.setAdapter(adapter);
  
+        listView.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				handleListClicked((OfferRide)adapter.getItem(position));
+			}
+		});
+        
         final ProgressDialog pDialog = new ProgressDialog(getActivity());
-        // Showing progress dialog before making http request
         pDialog.setMessage("Loading...");
         pDialog.show();
  
@@ -95,14 +95,31 @@ public class FeedsFragment extends Fragment {
 			@Override
 			public void onError(Exception e) {
 				pDialog.dismiss();
-				
+				e.printStackTrace();
+				Toast.makeText(mActivity, getString(R.string.feeds_error), Toast.LENGTH_LONG).show();
 			}
 			
 			@Override
 			public void onDataAvailable(String response) {		
 				User user = User.fromString(response);
-				ridesList.addAll(user.getAcceptedRides());
-				ridesList.addAll(user.getOfferedRides());
+				
+				if(user.getAcceptedRides().size() > 0){
+					adapter.addSeparatorItem(0);
+					OfferRide tempRide = new OfferRide();
+					tempRide.setSourceAddress("Accepted rides");
+					listItems.add(tempRide);
+					listItems.addAll(user.getAcceptedRides());
+				}
+				
+				if(user.getOfferedRides().size() > 0){
+					adapter.addSeparatorItem(user.getAcceptedRides().size() + 1);
+					OfferRide tempRide1 = new OfferRide();
+					tempRide1.setSourceAddress("Offered rides");
+					listItems.add(tempRide1);
+					listItems.addAll(user.getOfferedRides());
+					
+				}
+				
 				adapter.notifyDataSetChanged();
 				pDialog.dismiss();
 			}
@@ -165,73 +182,16 @@ public class FeedsFragment extends Fragment {
 //        AppController.getInstance().addToRequestQueue(movieReq);
         return view;
     }
-    @Override
-	public void onActivityResult(final int requestCode,
-                                    int resultCode, Intent data) {
- 
-    	if(resultCode == Activity.RESULT_OK){
-    		final Place place = PlacePicker.getPlace(data, getActivity());
-            String attributions = PlacePicker.getAttributions(data);
-            String address = place.getAddress().toString();
-            String placeId = place.getId();
-            
-            //TO-DO : make sures that it is not possible to get address here
-            if(TextUtils.isEmpty(address) || address == null){
-            	MyAutoComplete autoComplete = new MyAutoComplete(getActivity(), null, new AutoCompleteListener() {
-					
-					@Override
-					public void onPlaceAvailable(PlaceBuffer places) {
-						Place place = places.get(0);
-						
-						if(requestCode == 1){
-							String address1 = place.getAddress().toString();
-		                    if(TextUtils.isEmpty(address1) || address1 == null){
-		                    		address1 = place.getLatLng().toString();
-		                    }
-							mOfferRide.setSourceAddress(place.getAddress().toString());
-			            	sourceTextView.setText(address1);
-			            	
-						} else if(requestCode == 2){
-							String address1 = place.getAddress().toString();
-		                    if(TextUtils.isEmpty(address1) || address1 == null){
-		                    		address1 = place.getLatLng().toString();
-		                    }
-		                    mOfferRide.setDestinationAddress(place.getAddress().toString());
-		                    destinationTextView.setText(address1);
-						}
-					}
-					
-					@Override
-					public void onItemSelected(PlaceAutocomplete selectedplace) {}
-				});
-            	
-            	autoComplete.getPlaceById(placeId);
-            } else {
-            	if(requestCode == 1){
-					mOfferRide.setSourceAddress(address);
-	            	sourceTextView.setText(address);
-	            	
-				} else if(requestCode == 2){
-                    mOfferRide.setDestinationAddress(address);
-                    destinationTextView.setText(address);
-				}
-            }
-            
-            if(requestCode == 1){
-            	mOfferRide.setSource(place.getLatLng());
-            	mOfferRide.setSourceId(place.getId());
-            } else if(requestCode == 2){
-            	mOfferRide.setDestination(place.getLatLng());
-            	mOfferRide.setDestinationId(place.getId());
-            } else {
-                super.onActivityResult(requestCode, resultCode, data);
-            }
-            
-    	} else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-    	
-    	
+
+    private void handleListClicked(OfferRide ride){
+		FragmentManager fragmentManager = ((FragmentActivity)mActivity).getSupportFragmentManager();
+		fragmentManager
+			.beginTransaction()
+			.replace(R.id.container,
+				RideDetailsFragment.newInstance(2, "Offer a ride", ride.getRideId()))
+			.addToBackStack(null)
+			.commit();
+		
     }
     
 }

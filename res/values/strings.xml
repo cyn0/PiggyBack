@@ -5,6 +5,8 @@
     <string name="offer_ride">Offer a ride</string>
     <string name="offered_rides">Offered rides</string>
     <string name="my_rides">My rides</string>
+    <string name="sep_offered_rides">Offered rides</string>
+    <string name="sep_accepted_rides">Accepted rides</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">Example action</string>
@@ -20,6 +22,7 @@
     <string name="registration_error">Something went wrong, please try after sometime. Is connected to internet?</string>
     <string name="accept_success">Ride successfully accepted</string>
     <string name="accept_error">Something went wrong, please try after sometime. Is connected to internet?</string>
+    <string name="feeds_error">Unable to fetch feeds. Something went wrong, please try after sometime. Is connected to internet?</string>
     
     <string-array name="trip_types">
         <item>Recurring</item>

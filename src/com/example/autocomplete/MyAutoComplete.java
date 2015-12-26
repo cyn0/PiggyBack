@@ -76,7 +76,6 @@ public class MyAutoComplete implements
 		    mAutoCompleteListener.onItemSelected(item);
 		    
 		    getPlaceById(placeId);
-
 		}
     };
     
@@ -94,6 +93,7 @@ public class MyAutoComplete implements
     final Place place = places.get(0);
     Log.d("place", "address-" + place.getAddress());
     Log.d("place", "" + place.getLatLng());
+
 //    CharSequence attributions = places.getAttributions();
 //
 //    mNameTextView.setText(Html.fromHtml(place.getName() + ""));
