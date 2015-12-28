@@ -4,23 +4,22 @@
     android:layout_height="wrap_content"
     android:background="@android:color/transparent">
 <RelativeLayout 
+    android:id="@+id/layout"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="5dp"
+    android:layout_marginLeft="20dp"
     android:layout_marginRight="5dp"
-    android:layout_marginTop="10dp"
-    android:background="@drawable/list_row_selector"
-    android:paddingLeft="8dp"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp" >
-
-    <!-- Movie Title -->
+    android:background="@drawable/list_child_bg"
+    android:padding="8dp" >
+ 
+     <!-- android:background="@drawable/list_row_selector" -->
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/thumbnail"
+        android:layout_toRightOf="@+id/thumbnail"
         android:textSize="@dimen/title"
-        android:text="qwertitle"
         android:textStyle="bold" />
  
     <!-- Rating -->
@@ -30,6 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/title"
         android:layout_marginTop="1dip"
+        android:layout_toRightOf="@+id/thumbnail"
         android:textSize="@dimen/rating" />
      
     <!-- Genre -->
@@ -39,6 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/rating"
         android:layout_marginTop="5dp"
+        android:layout_toRightOf="@+id/thumbnail"
         android:textColor="@color/genre"
         android:textSize="@dimen/genre" />
  
@@ -52,36 +53,7 @@
         android:textColor="@color/year"
         android:textSize="@dimen/year" />
 
-    <!-- <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/title"
-        android:layout_toRightOf="@+id/rating"
-        android:src="@drawable/ic_launcher" />-->
-
-	<LinearLayout
-	    android:layout_width="30dp"
-	    android:layout_height="match_parent"
-	    android:gravity="right"
-	    android:layout_alignRight="@+id/rating"
-	    android:layout_alignTop="@+id/title"
-	    android:orientation="vertical" >
-
-	    <ImageView
-	        android:id="@+id/imageView1"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:src="@drawable/more_options" />
-
-	    <!-- <ImageView
-	        android:id="@+id/thumbnail"
-	        android:layout_weight="1"
-	        android:layout_gravity="center_vertical"
-	        android:layout_width="wrap_content"
-	        android:layout_height="0dp"
-	        android:src="@drawable/list_arrow" />-->
-	</LinearLayout>
+    
  
 </RelativeLayout>
 </LinearLayout>

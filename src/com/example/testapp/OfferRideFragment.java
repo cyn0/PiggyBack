@@ -5,6 +5,7 @@ import com.example.autocomplete.PlaceArrayAdapter;
 import com.example.autocomplete.MyAutoComplete.AutoCompleteListener;
 import com.example.autocomplete.PlaceArrayAdapter.PlaceAutocomplete;
 import com.example.datamodel.OfferRide;
+import com.example.datamodel.User;
 import com.example.utils.Constants;
 //import com.example.dm.DummyCurrentRide;
 //import com.example.dm.DummyRides;
@@ -24,13 +25,19 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 
 public class OfferRideFragment extends Fragment {
     // Store instance variables
@@ -38,7 +45,9 @@ public class OfferRideFragment extends Fragment {
     private int page;
     PlaceArrayAdapter mPlaceArrayAdapter;
     
-    Button chooseSource, chooseDestination, done;
+    ImageButton chooseSource;
+	ImageButton chooseDestination;
+	Button done;
     AutoCompleteTextView sourceTextView, destinationTextView;
     
     Place source, destination;
@@ -63,6 +72,7 @@ public class OfferRideFragment extends Fragment {
         title = getArguments().getString("someTitle");
         
         mOfferRide = new OfferRide();
+        mOfferRide.setOfferedUserId(User.getSharedInstance().getUserId());
     }
     
     // Inflate the view for the fragment based on layout XML
@@ -70,32 +80,48 @@ public class OfferRideFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_offer_ride, container, false);
         
-        chooseSource = (Button) view.findViewById(R.id.button1);
         sourceTextView = (AutoCompleteTextView)view.findViewById(R.id.sourceTextView);
-        chooseDestination = (Button) view.findViewById(R.id.button2);
         destinationTextView = (AutoCompleteTextView)view.findViewById(R.id.destinationTextView);
         final Spinner tripType = (Spinner)view.findViewById(R.id.trip_type_spinner);
+        CheckBox roundTripCheckBox = (CheckBox) view.findViewById(R.id.roundTripCheckbox);
         
         done = (Button) view.findViewById(R.id.next);
         
-        
-        chooseSource.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				openPlacePicker(1);
-				Toast.makeText(getActivity(), "Drop the pin on a place to select it", Toast.LENGTH_LONG).show();
-			}
-		});
+        sourceTextView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_RIGHT = 2;
 
-        chooseDestination.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				openPlacePicker(2);
-				Toast.makeText(getActivity(), "Drop the pin on a place to select it", Toast.LENGTH_LONG).show();
-			}
-		});
+                if(event.getAction() == MotionEvent.ACTION_UP) {
+                    if(event.getRawX() >= (sourceTextView.getRight() - sourceTextView.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                     openPlacePicker(1);
+                     Toast.makeText(getActivity(), "Drop the pin on a place to select it", Toast.LENGTH_LONG).show();
+                     return true;
+                    }
+                }
+                return false;
+            }
+
+			
+        });
         
-        
+        destinationTextView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_RIGHT = 2;
+
+                if(event.getAction() == MotionEvent.ACTION_UP) {
+                    if(event.getRawX() >= (sourceTextView.getRight() - sourceTextView.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                     openPlacePicker(2);
+                     Toast.makeText(getActivity(), "Drop the pin on a place to select it", Toast.LENGTH_LONG).show();
+                     return true;
+                    }
+                }
+                return false;
+            }
+
+			
+        });
         
         new MyAutoComplete(getActivity(), sourceTextView, new AutoCompleteListener() {			
 			@Override
@@ -128,6 +154,19 @@ public class OfferRideFragment extends Fragment {
         ArrayAdapter<CharSequence> tripTypeAdapter = ArrayAdapter.createFromResource(getActivity(),R.array.trip_types, android.R.layout.simple_spinner_item);
         tripTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         tripType.setAdapter(tripTypeAdapter);
+        
+        roundTripCheckBox.setChecked(mOfferRide.isRoundTrip());
+        roundTripCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+    		
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if(isChecked){
+					mOfferRide.setRoundTrip(true);
+				}else{
+					mOfferRide.setRoundTrip(false);
+				}
+			}
+       	});
         
         done.setOnClickListener(new View.OnClickListener() {
 			@Override

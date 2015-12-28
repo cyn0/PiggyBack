@@ -19,7 +19,11 @@ public class Ride implements Parcelable{
 		OFFER,
 		FIND
 	}
-	private String userId;
+	
+//	private String userId;
+	private String offeredUserId = "";
+	
+	private String userUserId = "";
 	
 	private String rideId;
 	
@@ -137,12 +141,28 @@ public class Ride implements Parcelable{
 		this.rideId = rideId;
 	}
 
-	public String getUserId() {
-		return userId;
+//	public String getUserId() {
+//		return userId;
+//	}
+//
+//	public void setUserId(String userId) {
+//		this.userId = userId;
+//	}
+
+	public String getOfferedUserId() {
+		return offeredUserId;
 	}
 
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setOfferedUserId(String offeredUserId) {
+		this.offeredUserId = offeredUserId;
+	}
+
+	public String getUserUserId() {
+		return userUserId;
+	}
+
+	public void setUserUserId(String secondUserId) {
+		this.userUserId = secondUserId;
 	}
 
 	@Override
@@ -164,6 +184,9 @@ public class Ride implements Parcelable{
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		// TODO Auto-generated method stub
+		dest.writeString(offeredUserId);
+		dest.writeString(userUserId);
+		
 		dest.writeString(sourceAddress);
 		dest.writeString(sourceId);
 		dest.writeDouble(source.latitude);
@@ -195,6 +218,10 @@ public class Ride implements Parcelable{
 	// example constructor that takes a Parcel and gives you an object populated with it's values
     public Ride(Parcel in) {
     	super();
+    	
+    	offeredUserId = in.readString();
+		userUserId = in.readString();
+		
     	double latitude, longitude;
     	
     	sourceAddress = in.readString();
@@ -227,6 +254,7 @@ public class Ride implements Parcelable{
 
     protected static String KEY_LATITUDE = "latitude";
     protected static String KEY_LONGITUDE = "longitude";
-    protected static String KEY_USER_ID = "user_id";
+    protected static String KEY_OFFERED_USER_ID = "offered_user_id";
+    protected static String KEY_USER_USER_ID = "user_user_id";
     protected static String KEY_RIDE_ID = "ride_id";
 }

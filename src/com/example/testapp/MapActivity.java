@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.example.datamodel.AcceptRide;
 import com.example.datamodel.OfferRide;
 import com.example.datamodel.Ride;
+import com.example.datamodel.User;
 import com.example.datamodel.Ride.RIDE_TYPE;
 import com.example.http.Httphandler;
 import com.example.http.Httphandler.HttpDataListener;
@@ -247,7 +248,7 @@ public class MapActivity extends BaseMapActivity{
 			
 			case FIND:
 				SlidingPanelTitle.setText("OFFERED RIDE");
-				shareButton.setText("ACCEPT");
+				shareButton.setText("REQUEST");
 				editButton.setText("SHARE");
 				break;
 		}
@@ -324,7 +325,7 @@ public class MapActivity extends BaseMapActivity{
 			break;
 		
 		case FIND:
-			acceptRide();
+			requestRide();
 			break;
 		}
 		
@@ -342,10 +343,10 @@ public class MapActivity extends BaseMapActivity{
 		startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.share_with)));
 	}
 	
-	public void acceptRide(){
+	public void requestRide(){
 		final ProgressDialog progress = ProgressDialog.show(this, getString(R.string.server_request_dialog_title),
 			    getString(R.string.server_request_dialog_message), true);
-		Httphandler.getSharedInstance().acceptRide((OfferRide)mRide, new HttpDataListener() {
+		Httphandler.getSharedInstance().requestRide((OfferRide)mRide, new HttpDataListener() {
 			
 			@Override
 			public void onError(Exception e) {
@@ -361,9 +362,9 @@ public class MapActivity extends BaseMapActivity{
 					JSONObject jsonResponse = new JSONObject(response);
 					boolean success = jsonResponse.getBoolean("success");
 					if(success){
-						Toast.makeText(getApplicationContext(), getString(R.string.accept_success), Toast.LENGTH_LONG).show();
+						Toast.makeText(getApplicationContext(), getString(R.string.request_success), Toast.LENGTH_LONG).show();
 					} else {
-						Toast.makeText(getApplicationContext(), getString(R.string.accept_error), Toast.LENGTH_LONG).show();
+						Toast.makeText(getApplicationContext(), getString(R.string.request_error), Toast.LENGTH_LONG).show();
 					}
 			}catch (JSONException e){
 				e.printStackTrace();
@@ -435,6 +436,7 @@ public class MapActivity extends BaseMapActivity{
 				@Override
 				public void onDataAvailable(String response) {
 					mRide = OfferRide.fromString(response);
+					mRide.setUserUserId(User.getSharedInstance().getUserId());
 					progress.dismiss();
 					setViews();
 					doInitialMapSetUps();

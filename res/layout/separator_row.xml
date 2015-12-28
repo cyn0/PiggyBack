@@ -8,10 +8,10 @@
     <TextView
         android:id="@+id/title"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="30dp"
         android:layout_marginTop="5dp"
         android:background="#33B5E5"
-        android:padding="10dp"
+        android:padding="2dp"
         android:textSize="@dimen/title"
         android:textColor="#ffffff"
         android:textStyle="bold" />

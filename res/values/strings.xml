@@ -22,6 +22,10 @@
     <string name="registration_error">Something went wrong, please try after sometime. Is connected to internet?</string>
     <string name="accept_success">Ride successfully accepted</string>
     <string name="accept_error">Something went wrong, please try after sometime. Is connected to internet?</string>
+    <string name="request_success">Request has been sent for the ride</string>
+    <string name="request_error">Something went wrong, please try after sometime. Is connected to internet?</string>
+    <string name="delete_success">Ride successfully deleted</string>
+    <string name="delete_error">Something went wrong in deleting the ride. Try after sometime.</string>
     <string name="feeds_error">Unable to fetch feeds. Something went wrong, please try after sometime. Is connected to internet?</string>
     
     <string-array name="trip_types">

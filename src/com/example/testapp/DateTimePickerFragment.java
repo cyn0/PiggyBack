@@ -29,6 +29,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TimePicker;
 
 public class DateTimePickerFragment extends Fragment {
@@ -41,7 +42,7 @@ public class DateTimePickerFragment extends Fragment {
     Button setStartTimeEditText;
 	Button setStartDateEditText;
 	Button setReturnTimeEditText;
-	CheckBox roundTripCheckBox, chargeCheckBox;
+	CheckBox chargeCheckBox;
 	EditText chargeEditText;
 	
     Place source, destination;
@@ -74,13 +75,22 @@ public class DateTimePickerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_recurring_trip_date, container, false);
         
+        LinearLayout returnTimeLayout = (LinearLayout) view.findViewById(R.id.returnTimeLayout);
         setStartTimeEditText = (Button) view.findViewById(R.id.setStartTime);
         setReturnTimeEditText = (Button) view.findViewById(R.id.setReturnTime);
         setStartDateEditText = (Button) view.findViewById(R.id.setStartDate);
         done = (Button) view.findViewById(R.id.next);
         chargeCheckBox = (CheckBox) view.findViewById(R.id.chargeCheckbox);
-        roundTripCheckBox = (CheckBox) view.findViewById(R.id.roundTripCheckbox);
         chargeEditText = (EditText) view.findViewById(R.id.chargeEditText);
+        
+        
+        long time = System.currentTimeMillis();
+        mOfferRide.setStartDate(time);
+        mOfferRide.setStartTime(time);
+        
+        setStartTimeEditText.setText(TimeHelper.TimeToString(time));
+        setStartDateEditText.setText(TimeHelper.DateToString(time));
+
         
         if(mOfferRide.isPriced()){
 			chargeEditText.setVisibility(View.VISIBLE);
@@ -89,9 +99,9 @@ public class DateTimePickerFragment extends Fragment {
 		}
         
         if(mOfferRide.isRoundTrip()){
-        	setReturnTimeEditText.setVisibility(View.VISIBLE);
+        	returnTimeLayout.setVisibility(View.VISIBLE);
 		}else{
-			setReturnTimeEditText.setVisibility(View.INVISIBLE);
+			returnTimeLayout.setVisibility(View.GONE);
 		}
         
         setStartTimeEditText.setOnClickListener(new View.OnClickListener() {
@@ -165,21 +175,6 @@ public class DateTimePickerFragment extends Fragment {
 				}else{
 					chargeEditText.setVisibility(View.VISIBLE);
 					mOfferRide.setPriced(true);
-				}
-			}
-       	});
-        
-        roundTripCheckBox.setChecked(mOfferRide.isRoundTrip());
-        roundTripCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-    		
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if(isChecked){
-					setReturnTimeEditText.setVisibility(View.VISIBLE);
-					mOfferRide.setRoundTrip(true);
-				}else{
-					setReturnTimeEditText.setVisibility(View.INVISIBLE);
-					mOfferRide.setRoundTrip(false);
 				}
 			}
        	});

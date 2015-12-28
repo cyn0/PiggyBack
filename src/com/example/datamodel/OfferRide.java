@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.example.datamodel.AnotherUser.USER_TYPE;
 import com.example.utils.TimeHelper;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -24,6 +25,10 @@ public class OfferRide extends Ride{
 	
 	private boolean isPriced = false;
 
+	private ArrayList<AnotherUser> requestedUsers = new ArrayList<>();
+	private ArrayList<AnotherUser> acceptedUsers = new ArrayList<>();
+	private static String KEY_REQUESTED_USERS = "requested";
+	private static String KEY_ACCEPTED_USERS = "accepted";
 	public OfferRide(){}
 	
 	public long getStartDate() {
@@ -68,6 +73,22 @@ public class OfferRide extends Ride{
 
 	public void setPrice(double price) {
 		this.price = price;
+	}
+
+	public ArrayList<AnotherUser> getRequestedUsers() {
+		return requestedUsers;
+	}
+
+	public void setRequestedUsers(ArrayList<AnotherUser> requestedUsers) {
+		this.requestedUsers = requestedUsers;
+	}
+
+	public ArrayList<AnotherUser> getAcceptedUsers() {
+		return acceptedUsers;
+	}
+
+	public void setAcceptedUsers(ArrayList<AnotherUser> acceptedUsers) {
+		this.acceptedUsers = acceptedUsers;
 	}
 
 	public JSONObject toJSON(){
@@ -118,7 +139,9 @@ public class OfferRide extends Ride{
 			}
 			
 			root.put("waypoints", wayPoints);
-			root.put(KEY_USER_ID, User.getSharedInstance().getUserId());
+//			root.put(KEY_USER_ID, User.getSharedInstance().getUserId());
+			root.put(KEY_OFFERED_USER_ID, getOfferedUserId());
+			root.put(KEY_USER_USER_ID, getUserUserId());
 			root.put(KEY_RIDE_ID, getRideId());
 			return root;
 		}catch (JSONException e) {
@@ -133,7 +156,10 @@ public class OfferRide extends Ride{
 			OfferRide mOfferRide = new OfferRide();
 			JSONObject root = new JSONObject(input);
 			
-			mOfferRide.setUserId(root.getString(KEY_USER_ID));
+//			mOfferRide.setUserId(root.getString(KEY_USER_ID));
+			mOfferRide.setOfferedUserId(root.getString(KEY_OFFERED_USER_ID));
+			mOfferRide.setUserUserId(root.getString(KEY_USER_USER_ID));
+			
 			mOfferRide.setRideId(root.getString("_id"));
 			mOfferRide.setRecurring(root.getBoolean("is_recurring"));
 			mOfferRide.setRoundTrip(root.getBoolean("is_round_trip"));
@@ -177,14 +203,44 @@ public class OfferRide extends Ride{
 				mOfferRide.setPrice(root.getDouble("price"));
 			}
 			
+			int length;
+			
 			JSONArray wp = root.getJSONArray("waypoints");
-			int length = wp.length();
+			length = wp.length();
 			
 			for(int i=0; i < length; i++){
 				JSONObject w = wp.getJSONObject(i);
 				temp_lat = w.getDouble(KEY_LATITUDE);
 				temp_long = w.getDouble(KEY_LONGITUDE);
 			}
+			
+			if(!root.isNull(KEY_REQUESTED_USERS)){
+				JSONArray jsonRequestedUsers = root.getJSONArray(KEY_REQUESTED_USERS);
+				length = jsonRequestedUsers.length();
+				ArrayList<AnotherUser> ru = new ArrayList<>();
+				for(int i=0; i < length; i++){
+					JSONObject u = jsonRequestedUsers.getJSONObject(i);
+					AnotherUser user = AnotherUser.fromString(u.toString());
+					user.setType(USER_TYPE.REQUEST);
+					ru.add(user);
+				}
+				mOfferRide.setRequestedUsers(ru);
+			}
+			
+			if(!root.isNull(KEY_ACCEPTED_USERS)){
+				JSONArray jsonAcceptedUsers = root.getJSONArray(KEY_ACCEPTED_USERS);
+				length = jsonAcceptedUsers.length();
+				ArrayList<AnotherUser> au = new ArrayList<>();
+				for(int i=0; i < length; i++){
+					JSONObject u = jsonAcceptedUsers.getJSONObject(i);
+					AnotherUser user = AnotherUser.fromString(u.toString());
+					user.setType(USER_TYPE.ACCEPT);
+					au.add(user);
+				}
+				mOfferRide.setAcceptedUsers(au);
+			}
+			
+			
 			return mOfferRide;
 		}catch (JSONException e) {
 			e.printStackTrace();

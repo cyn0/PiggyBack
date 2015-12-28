@@ -127,25 +127,27 @@ public class User {
 		User user = new User();
 		try{
 			JSONObject root = new JSONObject(input);
-			
-			JSONArray jsonOfferedRides = root.getJSONArray(KEY_OFFERED_RIDES);
-			ArrayList<OfferRide> offerRides = new ArrayList<OfferRide>();
-			for(int i=0; i<jsonOfferedRides.length(); i++){
-				JSONObject jsonOfferedRide = jsonOfferedRides.getJSONObject(i);
-				OfferRide ride = OfferRide.fromString(jsonOfferedRide.toString());
-				offerRides.add(ride);
+			if(!root.isNull(KEY_OFFERED_RIDES)){
+				JSONArray jsonOfferedRides = root.getJSONArray(KEY_OFFERED_RIDES);
+				ArrayList<OfferRide> offerRides = new ArrayList<OfferRide>();
+				for(int i=0; i<jsonOfferedRides.length(); i++){
+					JSONObject jsonOfferedRide = jsonOfferedRides.getJSONObject(i);
+					OfferRide ride = OfferRide.fromString(jsonOfferedRide.toString());
+					offerRides.add(ride);
+				}
+				user.setOfferedRides(offerRides);
 			}
-			user.setOfferedRides(offerRides);
 			
-			JSONArray jsonAcceptedRides = root.getJSONArray(KEY_ACCEPTED_RIDES);
-			ArrayList<OfferRide> acceptRides = new ArrayList<OfferRide>();
-			for(int i=0; i<jsonAcceptedRides.length(); i++){
-				JSONObject jsonAcceptRide = jsonAcceptedRides.getJSONObject(i);
-				OfferRide ride = OfferRide.fromString(jsonAcceptRide.toString());
-				acceptRides.add(ride);
+			if(!root.isNull(KEY_ACCEPTED_RIDES)){
+				JSONArray jsonAcceptedRides = root.getJSONArray(KEY_ACCEPTED_RIDES);
+				ArrayList<OfferRide> acceptRides = new ArrayList<OfferRide>();
+				for(int i=0; i<jsonAcceptedRides.length(); i++){
+					JSONObject jsonAcceptRide = jsonAcceptedRides.getJSONObject(i);
+					OfferRide ride = OfferRide.fromString(jsonAcceptRide.toString());
+					acceptRides.add(ride);
+				}
+				user.setAcceptedRides(acceptRides);
 			}
-			user.setAcceptedRides(acceptRides);
-			
 		} catch(JSONException e){
 			e.printStackTrace();
 		}

@@ -8,5 +8,5 @@
     <color name="list_row_end_color">#ffffff</color>
     <color name="list_row_hover_start_color">#ebeef0</color>
     <color name="list_row_hover_end_color">#ebeef0</color>
- 
+ 	<color name="bg_actionbar">#0099CC</color>
 </resources>

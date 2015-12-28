@@ -1,6 +1,9 @@
 package com.example.testapp;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -18,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -27,6 +31,7 @@ import com.example.autocomplete.MyAutoComplete.AutoCompleteListener;
 import com.example.autocomplete.PlaceArrayAdapter.PlaceAutocomplete;
 import com.example.datamodel.OfferRide;
 import com.example.datamodel.User;
+import com.example.feeds.CustomExpandableListAdapter;
 import com.example.feeds.CustomListAdapter;
 import com.example.http.Httphandler;
 import com.example.http.Httphandler.HttpDataListener;
@@ -39,7 +44,7 @@ public class FeedsFragment extends Fragment {
     private String title;
     private int page;
     PlaceArrayAdapter mPlaceArrayAdapter;
-    
+    private String TAG = "FeedsFragment";
     Button chooseSource, chooseDestination, done;
     AutoCompleteTextView sourceTextView, destinationTextView;
     
@@ -71,20 +76,24 @@ public class FeedsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_feeds, container, false);
-        
 
-        ListView listView = (ListView) view.findViewById(R.id.list);
-        listView.setScrollingCacheEnabled(false);
+        ExpandableListView expListView = (ExpandableListView) view.findViewById(R.id.lvExp);
         final ArrayList<OfferRide> listItems = new ArrayList<OfferRide>();
-        final CustomListAdapter adapter = new CustomListAdapter(getActivity(), listItems);
-        listView.setAdapter(adapter);
  
-        listView.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				handleListClicked((OfferRide)adapter.getItem(position));
-			}
-		});
+        final CustomExpandableListAdapter adapter = new CustomExpandableListAdapter(getActivity(), listItems);
+ 
+        // setting list adapter
+        expListView.setAdapter(adapter);
+        
+        
+//        listView.setOnItemClickListener(new OnItemClickListener() {
+//			@Override
+//			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//				handleListClicked((OfferRide)adapter.getItem(position));
+//			}
+//		});
+        
+        
         
         final ProgressDialog pDialog = new ProgressDialog(getActivity());
         pDialog.setMessage("Loading...");
@@ -103,6 +112,7 @@ public class FeedsFragment extends Fragment {
 			public void onDataAvailable(String response) {		
 				User user = User.fromString(response);
 				
+				Log.d(TAG, "Accepted rides - "+ user.getAcceptedRides().size() + " Offered rides " + user.getOfferedRides().size());
 				if(user.getAcceptedRides().size() > 0){
 					adapter.addSeparatorItem(0);
 					OfferRide tempRide = new OfferRide();
@@ -112,7 +122,11 @@ public class FeedsFragment extends Fragment {
 				}
 				
 				if(user.getOfferedRides().size() > 0){
-					adapter.addSeparatorItem(user.getAcceptedRides().size() + 1);
+					if(user.getAcceptedRides().size() == 0){
+						adapter.addSeparatorItem(0);
+					}else{
+						adapter.addSeparatorItem(user.getAcceptedRides().size() + 1);
+					}
 					OfferRide tempRide1 = new OfferRide();
 					tempRide1.setSourceAddress("Offered rides");
 					listItems.add(tempRide1);

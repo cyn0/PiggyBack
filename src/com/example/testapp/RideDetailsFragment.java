@@ -1,25 +1,32 @@
 package com.example.testapp;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.example.datamodel.OfferRide;
 import com.example.http.Httphandler;
 import com.example.http.Httphandler.HttpDataListener;
 import com.example.utils.TimeHelper;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class RideDetailsFragment extends Fragment {
     // Store instance variables
     private String title, ride_id;
     private int page;
     private OfferRide mOfferRide;
+    private FragmentActivity mFragmentActivity;
     
-    Button done;
     TextView sourceTextView, destinationTextView, forwardStartTimeTextView, returnStartTimeTextView;
     TextView tripStartDateTextView, isRecurringTextView, isRoundTripTextView, priceTextView;
     
@@ -42,6 +49,7 @@ public class RideDetailsFragment extends Fragment {
         title = getArguments().getString("someTitle");
         ride_id = getArguments().getString("ride_id");
         
+        mFragmentActivity = getActivity();
     }
     
     // Inflate the view for the fragment based on layout XML
@@ -49,8 +57,8 @@ public class RideDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_ride_details, container, false);
         
-        done = (Button) view.findViewById(R.id.next);
-        
+        Button done = (Button) view.findViewById(R.id.next);
+        Button negativeButton = (Button) view.findViewById(R.id.negative);
         sourceTextView = (TextView) view.findViewById(R.id.source);
         destinationTextView = (TextView) view.findViewById(R.id.destination);
         forwardStartTimeTextView = (TextView) view.findViewById(R.id.forwardStartTime);
@@ -67,19 +75,13 @@ public class RideDetailsFragment extends Fragment {
 			}
 		});
         
-        HttpDataListener mDataListener = new HttpDataListener() {				
+        negativeButton.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onError(Exception e) {			
+			public void onClick(View v) {
+				deleteRide();
 			}
-			
-			@Override
-			public void onDataAvailable(String response) {
-				mOfferRide = OfferRide.fromString(response);
-				setViews();
-			}
-        };
-        
-		Httphandler.getSharedInstance().getRide(ride_id, mDataListener);
+		});
+        fetchData();
 		
         return view;
     }
@@ -115,5 +117,57 @@ public class RideDetailsFragment extends Fragment {
     	}else{
     		priceTextView.setText("Price : Free of charge");
     	}
+    }
+    
+    public void fetchData(){
+    	final ProgressDialog pDialog = new ProgressDialog(getActivity());
+        pDialog.setMessage("Loading...");
+        pDialog.show();
+    	HttpDataListener mDataListener = new HttpDataListener() {				
+			@Override
+			public void onError(Exception e) {		
+				pDialog.dismiss();
+				Toast.makeText(mFragmentActivity, getString(R.string.feeds_error), Toast.LENGTH_LONG).show();
+			}
+			
+			@Override
+			public void onDataAvailable(String response) {
+				mOfferRide = OfferRide.fromString(response);
+				setViews();
+				pDialog.dismiss();
+			}
+        };
+        
+		Httphandler.getSharedInstance().getRide(ride_id, mDataListener);
+    }
+    
+    public void deleteRide(){
+    	final ProgressDialog pDialog = new ProgressDialog(getActivity());
+        pDialog.setMessage("Loading...");
+        pDialog.show();
+    	HttpDataListener mDataListener = new HttpDataListener() {				
+			@Override
+			public void onError(Exception e) {		
+				pDialog.dismiss();
+				Toast.makeText(mFragmentActivity, getString(R.string.feeds_error), Toast.LENGTH_LONG).show();
+			}
+			
+			@Override
+			public void onDataAvailable(String response) {
+				pDialog.dismiss();
+				try{
+					JSONObject jsonResponse = new JSONObject(response);
+					boolean success = jsonResponse.getBoolean("success");
+					if(success){
+						Toast.makeText(mFragmentActivity, getString(R.string.delete_success), Toast.LENGTH_LONG).show();
+					} else {
+						Toast.makeText(mFragmentActivity, getString(R.string.delete_error), Toast.LENGTH_LONG).show();
+					}
+				}catch (JSONException e){
+					e.printStackTrace();
+				}
+			}
+        };        
+		Httphandler.getSharedInstance().deleteRide(mOfferRide, mDataListener);
     }
 }

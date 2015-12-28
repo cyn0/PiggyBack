@@ -97,14 +97,18 @@ public class MainActivity extends ActionBarActivity implements
 				fragmentManager
 					.beginTransaction()
 					.replace(R.id.container,
-							FeedsFragment.newInstance(1, "My rides")).commit();
+							FeedsFragment.newInstance(1, "My rides"))
+					.addToBackStack(null)
+					.commit();
 				break;
 			
 			case 1:
 				fragmentManager
 					.beginTransaction()
 					.replace(R.id.container,
-							OfferRideFragment.newInstance(2, "Offer a ride")).commit();
+							OfferRideFragment.newInstance(2, "Offer a ride"))
+					.addToBackStack(null)
+					.commit();
 				mTitle = getString(R.string.offer_ride);
 				break;
 			case 2:

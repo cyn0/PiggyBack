@@ -25,10 +25,11 @@ import java.io.OutputStream;
 public class Httphandler {
 	//Context context;
 	private String SERVER_BASE_URL = "http://ec2-54-149-149-26.us-west-2.compute.amazonaws.com:5050";
-	private final String GET_RIDE = "/ride";
-	private final String GET_USER = "/user";
+	private final String GET_RIDE = "/ride/";
+	private final String GET_USER = "/user/";
     private final String POST_OFFERED_RIDE = "/ride";
     private final String POST_ACCEPT_RIDE = "/ride/accept";
+    private final String POST_REQUEST_RIDE = "/ride/request";
     private final String POST_REGISTER = "/register";
     
 	private String TAG = "Http error";
@@ -50,7 +51,7 @@ public class Httphandler {
 	}
 
 	public void getRide(String ride_id, HttpDataListener dataListener){
-		final String url = SERVER_BASE_URL + GET_RIDE + "/" + ride_id;
+		final String url = SERVER_BASE_URL + GET_RIDE + ride_id;
 		this.mHttpDataListener = dataListener;
 		new AsyncHttpTask().execute(url, "GET");
 	}
@@ -60,6 +61,18 @@ public class Httphandler {
         final String url = SERVER_BASE_URL + POST_OFFERED_RIDE;
         this.mHttpDataListener = dataListener;
         new AsyncHttpTask().execute(url, "POST", mOfferRide.toJSON().toString());
+    }
+    
+    public void deleteRide(OfferRide mOfferRide, HttpDataListener dataListener){
+        final String url = SERVER_BASE_URL + GET_USER + mOfferRide.getOfferedUserId()  + GET_RIDE  + mOfferRide.getRideId();
+        this.mHttpDataListener = dataListener;
+        new AsyncHttpTask().execute(url, "DELETE");
+    }
+    
+    public void requestRide(OfferRide mRide, HttpDataListener dataListener){
+        final String url = SERVER_BASE_URL + POST_REQUEST_RIDE;
+        this.mHttpDataListener = dataListener;
+        new AsyncHttpTask().execute(url, "POST", mRide.toJSON().toString());
     }
     
     public void acceptRide(OfferRide mRide, HttpDataListener dataListener){
@@ -75,7 +88,7 @@ public class Httphandler {
     }
 
     public void getUser(String user_id, HttpDataListener dataListener){
-		final String url = SERVER_BASE_URL + GET_USER + "/" + user_id;
+		final String url = SERVER_BASE_URL + GET_USER + user_id;
 		this.mHttpDataListener = dataListener;
 		new AsyncHttpTask().execute(url, "GET");
 	}
@@ -103,13 +116,13 @@ public class Httphandler {
 
 				urlConnection.setRequestMethod(httpMethod);
                 
-
 				if(httpMethod.equals("POST")){
 	                byte[] outputInBytes = params[2].getBytes("UTF-8");
 	                OutputStream os = urlConnection.getOutputStream();
 	                os.write( outputInBytes );
 	                os.close();
 				}
+				
 				Log.d("Request url", url.toString());
                 int statusCode = urlConnection.getResponseCode();
 
