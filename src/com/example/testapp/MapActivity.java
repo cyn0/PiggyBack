@@ -41,7 +41,6 @@ import com.google.android.gms.maps.model.Polyline;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState;
 
-
 public class MapActivity extends BaseMapActivity{
   
 	private static final String TAG = "MAP acrtivity";

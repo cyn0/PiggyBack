@@ -7,12 +7,17 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.datamodel.User;
@@ -21,7 +26,7 @@ import com.example.http.Httphandler.HttpDataListener;
 import com.example.utils.Constants;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
-public class RegisterActivity extends Activity {
+public class RegisterActivity extends ActionBarActivity {
 
 	Button btnGCMRegister;
 	GoogleCloudMessaging gcm;
@@ -30,7 +35,8 @@ public class RegisterActivity extends Activity {
 	public static final String REG_ID = "regId";
 	private Boolean registerationSuccess = false;
 	static final String TAG = "Register Activity";
-
+	EditText phoneEditText;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -38,22 +44,30 @@ public class RegisterActivity extends Activity {
 
 		context = getApplicationContext();
 	
+		getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#33B5E5")));
+		
 		if (isRegistrationSuccess()) {
 			directToMainActivity();
 		}
+		phoneEditText = (EditText) findViewById(R.id.editText1);
 		btnGCMRegister = (Button) findViewById(R.id.btnGCMRegister);
 		btnGCMRegister.setOnClickListener( new View.OnClickListener() {
 			public void onClick(View v) {
-				/*if (TextUtils.isEmpty(User.getSharedInstance().getPhoneNumber(context))) {
-					//verifyPhone()
-				} else */if (TextUtils.isEmpty(User.getSharedInstance().getGCMRegistrationId())) {
-					registerGCM();
-				} else if(!isRegistrationSuccess()){
-					postRegistrationDataToServer();
-				} else {
-					directToMainActivity();
+				if(isPhoneNumberValid()){
+					if (TextUtils.isEmpty(User.getSharedInstance().getPhoneNumber())) {
+						if(verifyPhone()){
+							registerGCM();
+						}
+					}
+					if (TextUtils.isEmpty(User.getSharedInstance().getGCMRegistrationId())) {
+						registerGCM();
+					} 
+					if(!isRegistrationSuccess()){
+						postRegistrationDataToServer();
+					} else {
+						directToMainActivity();
+					}
 				}
-				
 			}
 		});		
 }
@@ -166,4 +180,16 @@ public class RegisterActivity extends Activity {
 		return User.getSharedInstance().getRegistrationStatus();
 	}
 	
+	private boolean isPhoneNumberValid(){
+		String phone = phoneEditText.getText().toString();
+		if(phone.length() != 10){
+			Toast.makeText(getApplicationContext(), "Phone number not valid", Toast.LENGTH_LONG).show();
+			return false;
+		}
+		return true;
+	}
+	
+	private boolean verifyPhone(){
+		return true;
+	}
 }

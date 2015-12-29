@@ -13,4 +13,8 @@
    <solid android:color="#ffffff" />
    <stroke android:width="2dip" android:color="#99CC00"/>
    
+   <gradient
+      android:startColor="#eaf6e1"
+      android:endColor="#eaf6e1"
+      android:angle="270" />
 </shape>

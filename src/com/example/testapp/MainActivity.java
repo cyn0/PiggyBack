@@ -16,6 +16,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
@@ -56,7 +59,8 @@ public class MainActivity extends ActionBarActivity implements
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.navigation_drawer);
 		mTitle = getTitle();
-
+		
+		getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#33B5E5")));
 		// Set up the drawer.
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
 				(DrawerLayout) findViewById(R.id.drawer_layout));
@@ -215,7 +219,8 @@ public class MainActivity extends ActionBarActivity implements
 	private void checkGCMRegistrationId(){
 		boolean registrationSucsess = User.getSharedInstance().getRegistrationStatus();
 		if (!registrationSucsess) {
-			Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
+			//Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
+			Intent intent = new Intent(getApplicationContext(), IntroActivity.class);
 			startActivity(intent);
 			Log.d(TAG, "Registration not done");
 			

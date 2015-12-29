@@ -24,9 +24,16 @@
     <string name="accept_error">Something went wrong, please try after sometime. Is connected to internet?</string>
     <string name="request_success">Request has been sent for the ride</string>
     <string name="request_error">Something went wrong, please try after sometime. Is connected to internet?</string>
+    <string name="reject_success">Request has been sent for the ride</string>
+    <string name="reject_error">Something went wrong, please try after sometime. Is connected to internet?</string>
     <string name="delete_success">Ride successfully deleted</string>
     <string name="delete_error">Something went wrong in deleting the ride. Try after sometime.</string>
     <string name="feeds_error">Unable to fetch feeds. Something went wrong, please try after sometime. Is connected to internet?</string>
+    <string name="app_intro">GETTING STARTED</string>
+    
+    
+    <string name="skip_button">SKIP</string>
+    <string name="done_button">DONE</string>
     
     <string-array name="trip_types">
         <item>Recurring</item>

@@ -14,8 +14,17 @@ public class AnotherUser {
 	private USER_TYPE user_type;
 	private String phone_number;
 	private String contact_name;
+	private String id;
 	
 	private static String KEY_PHONE_NUMBER = "phone_number";
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
 	public String getPhone_number() {
 		return phone_number;
 	}
@@ -44,6 +53,7 @@ public class AnotherUser {
 		AnotherUser user = new AnotherUser();
 		try{
 			JSONObject root = new JSONObject(input);
+			user.setId(root.getString("_id"));
 			user.setPhone_number(root.getString(KEY_PHONE_NUMBER));
 			String name = CommonUtil.getSharedInstance().getContactName(user.getPhone_number());
 			user.setContact_name(name);

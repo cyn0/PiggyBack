@@ -62,7 +62,6 @@ public class CommonUtil {
 	}
 	
 	public String getContactName(String phoneNumber) {
-		phoneNumber = "7708840303";
 	    ContentResolver cr = getContext().getContentResolver();
 	    Uri uri = Uri.withAppendedPath(PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
 	    Cursor cursor = cr.query(uri, new String[]{PhoneLookup.DISPLAY_NAME}, null, null, null);

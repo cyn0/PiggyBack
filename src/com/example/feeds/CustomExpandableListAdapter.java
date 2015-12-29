@@ -5,20 +5,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TreeSet;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.example.datamodel.AnotherUser;
 import com.example.datamodel.OfferRide;
 import com.example.feeds.CustomListAdapter.ViewHolder;
+import com.example.http.Httphandler;
+import com.example.http.Httphandler.HttpDataListener;
 import com.example.testapp.R;
 import com.example.utils.CommonUtil;
 import com.example.utils.TimeHelper;
  
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
+import android.net.ParseException;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +34,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -77,7 +85,7 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
     }
  
     @Override
-    public View getChildView(int groupPosition, final int childPosition,
+    public View getChildView(final int groupPosition, final int childPosition,
             boolean isLastChild, View convertView, ViewGroup parent) {
  
         final AnotherUser child = (AnotherUser) getChild(groupPosition, childPosition);
@@ -89,16 +97,30 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
         }
  
         TextView txtListChild = (TextView) convertView.findViewById(R.id.title);
-        RelativeLayout layout = (RelativeLayout) convertView.findViewById(R.id.layout);
+        LinearLayout layout = (LinearLayout) convertView.findViewById(R.id.layout);
+        ImageView accept = (ImageView) convertView.findViewById(R.id.accept);
+        ImageView reject = (ImageView) convertView.findViewById(R.id.reject);
+        
         txtListChild.setText(child.getContact_name());
         switch(child.getType()){
         	case ACCEPT:
+        		accept.setVisibility(View.GONE);
         		layout.setBackgroundResource(R.drawable.list_child_accept);
         		break;
         	case REQUEST:
         		layout.setBackgroundResource(R.drawable.list_child_bg);
         		break;
         }
+        
+        accept.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				OfferRide ride = rides.get(groupPosition);
+				ride.setUserUserId(child.getId());
+				handleAcceptClicked(ride);
+			}
+		});
+        
         return convertView;
     }
  
@@ -269,6 +291,7 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
     }
     
     public void handleOptionImageClicked(){
+
     	AlertDialog.Builder builderSingle = new AlertDialog.Builder(mActivity);
 	        builderSingle.setTitle("Options");
 	        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
@@ -305,5 +328,35 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 	                });
 	        builderSingle.show();
 
+    }
+    
+    public void handleAcceptClicked(OfferRide ride){
+    	final ProgressDialog pDialog = new ProgressDialog(mActivity);
+        pDialog.setMessage("Updating...");
+        pDialog.show();
+    	Httphandler.getSharedInstance().acceptRide(ride, new HttpDataListener() {
+			
+			@Override
+			public void onError(Exception e) {
+				pDialog.dismiss();
+				Toast.makeText(mActivity, mActivity.getString(R.string.server_error), Toast.LENGTH_LONG).show();
+			}
+			
+			@Override
+			public void onDataAvailable(String response) {
+				pDialog.dismiss();
+				try{
+					JSONObject jsonResponse = new JSONObject(response);
+					boolean success = jsonResponse.getBoolean("success");
+					if(success){
+						Toast.makeText(mActivity, mActivity.getString(R.string.accept_success), Toast.LENGTH_LONG).show();
+					} else {
+						Toast.makeText(mActivity, mActivity.getString(R.string.accept_error), Toast.LENGTH_LONG).show();
+					}
+				}catch(JSONException e){
+					e.printStackTrace();
+				}
+			}
+		});
     }
 }
