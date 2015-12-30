@@ -56,6 +56,8 @@ public class MainActivity extends ActionBarActivity implements
 		mContext = getApplicationContext();
 		startApplicationComponents();
 		checkGCMRegistrationId();
+		
+		
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.navigation_drawer);
 		mTitle = getTitle();
@@ -216,15 +218,17 @@ public class MainActivity extends ActionBarActivity implements
 		Httphandler.setSharedInstance(new Httphandler());
 	}
 	
-	private void checkGCMRegistrationId(){
+	private boolean checkGCMRegistrationId(){
 		boolean registrationSucsess = User.getSharedInstance().getRegistrationStatus();
 		if (!registrationSucsess) {
 			//Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
 			Intent intent = new Intent(getApplicationContext(), IntroActivity.class);
 			startActivity(intent);
 			Log.d(TAG, "Registration not done");
-			
+			return false;
 		}
+		
+		return true;
 //		int registeredVersion = getSharedPreferences(Constants.APP_SETTINGS, MODE_PRIVATE).getInt(Constants.APP_VERSION, Integer.MIN_VALUE);
 //		int currentVersion = getAppVersion(getApplicationContext());
 //		if (registeredVersion != currentVersion) {

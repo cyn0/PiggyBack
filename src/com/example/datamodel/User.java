@@ -8,7 +8,6 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
-import android.net.ParseException;
 import android.util.Log;
 
 import com.example.testapp.MainActivity;
@@ -25,10 +24,11 @@ public class User {
 	
 	final static String KEY_OFFERED_RIDES = "offered_rides";
 	final static String KEY_ACCEPTED_RIDES = "accepted_rides";
+	final static String KEY_REQUESTED_RIDES = "requested_rides";
 	
 	ArrayList<OfferRide> mOfferedRides = new ArrayList<OfferRide>();
 	ArrayList<OfferRide> mAcceptedRides = new ArrayList<OfferRide>();
-	
+	ArrayList<OfferRide> mRequestedRides = new ArrayList<OfferRide>();
 	public static User getSharedInstance(){
 		return mSharedInstance;
 	}
@@ -67,8 +67,7 @@ public class User {
 	
 	public String getPhoneNumber(){
 		Context context = getContext();
-		//return context.getSharedPreferences(Constants.APP_SETTINGS, context.MODE_PRIVATE).getString(Constants.A_PHONE_NUMBER, "");
-		return "770884030";
+		return context.getSharedPreferences(Constants.APP_SETTINGS, context.MODE_PRIVATE).getString(Constants.A_PHONE_NUMBER, "");
 	}
 	
 	public void setUserId(String userId){
@@ -103,12 +102,20 @@ public class User {
 		this.mAcceptedRides = rides;
 	}
 	
+	public void setRequestedRides(ArrayList<OfferRide> rides){
+		this.mRequestedRides = rides;
+	}
+	
 	public ArrayList<OfferRide> getOfferedRides(){
 		return this.mOfferedRides;
 	}
 	
 	public ArrayList<OfferRide> getAcceptedRides(){
 		return this.mAcceptedRides;
+	}
+	
+	public ArrayList<OfferRide> getRequestedRides(){
+		return this.mRequestedRides;
 	}
 	
 	public String toString(){
@@ -147,6 +154,17 @@ public class User {
 					acceptRides.add(ride);
 				}
 				user.setAcceptedRides(acceptRides);
+			}
+			
+			if(!root.isNull(KEY_REQUESTED_RIDES)){
+				JSONArray jsonRequestedRides = root.getJSONArray(KEY_REQUESTED_RIDES);
+				ArrayList<OfferRide> requestRides = new ArrayList<OfferRide>();
+				for(int i=0; i<jsonRequestedRides.length(); i++){
+					JSONObject jsonRequestRide = jsonRequestedRides.getJSONObject(i);
+					OfferRide ride = OfferRide.fromString(jsonRequestRide.toString());
+					requestRides.add(ride);
+				}
+				user.setRequestedRides(requestRides);
 			}
 		} catch(JSONException e){
 			e.printStackTrace();

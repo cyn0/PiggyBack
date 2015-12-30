@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
@@ -53,8 +54,8 @@ public class OfferRideFragment extends Fragment {
     Place source, destination;
     
     OfferRide mOfferRide;
+    FragmentActivity mActivity;
     
-    // newInstance constructor for creating fragment with arguments
     public static OfferRideFragment newInstance(int page, String title) {
     	OfferRideFragment fragmentFirst = new OfferRideFragment();
         Bundle args = new Bundle();
@@ -64,18 +65,16 @@ public class OfferRideFragment extends Fragment {
         return fragmentFirst;
     }
 
-    // Store instance variables based on arguments passed
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         page = getArguments().getInt("someInt", 0);
         title = getArguments().getString("someTitle");
-        
+        mActivity = getActivity();
         mOfferRide = new OfferRide();
         mOfferRide.setOfferedUserId(User.getSharedInstance().getUserId());
     }
     
-    // Inflate the view for the fragment based on layout XML
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_offer_ride, container, false);
@@ -95,7 +94,7 @@ public class OfferRideFragment extends Fragment {
                 if(event.getAction() == MotionEvent.ACTION_UP) {
                     if(event.getRawX() >= (sourceTextView.getRight() - sourceTextView.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
                      openPlacePicker(1);
-                     Toast.makeText(getActivity(), "Drop the pin on a place to select it", Toast.LENGTH_LONG).show();
+                     Toast.makeText(mActivity, "Drop the pin on a place to select it", Toast.LENGTH_LONG).show();
                      return true;
                     }
                 }
@@ -113,7 +112,7 @@ public class OfferRideFragment extends Fragment {
                 if(event.getAction() == MotionEvent.ACTION_UP) {
                     if(event.getRawX() >= (sourceTextView.getRight() - sourceTextView.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
                      openPlacePicker(2);
-                     Toast.makeText(getActivity(), "Drop the pin on a place to select it", Toast.LENGTH_LONG).show();
+                     Toast.makeText(mActivity, "Drop the pin on a place to select it", Toast.LENGTH_LONG).show();
                      return true;
                     }
                 }
@@ -123,7 +122,7 @@ public class OfferRideFragment extends Fragment {
 			
         });
         
-        new MyAutoComplete(getActivity(), sourceTextView, new AutoCompleteListener() {			
+        new MyAutoComplete(mActivity, sourceTextView, new AutoCompleteListener() {			
 			@Override
 			public void onItemSelected(PlaceAutocomplete selectedplace) {}
 
@@ -136,7 +135,7 @@ public class OfferRideFragment extends Fragment {
 			}
 		});
         
-        new MyAutoComplete(getActivity(), destinationTextView, new AutoCompleteListener() {			
+        new MyAutoComplete(mActivity, destinationTextView, new AutoCompleteListener() {			
 			@Override
 			public void onItemSelected(PlaceAutocomplete selectedplace) {}
 
@@ -172,10 +171,10 @@ public class OfferRideFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				if( mOfferRide.getSource() == null) {
-					Toast.makeText(getActivity(), "Source is not recognisable", Toast.LENGTH_LONG).show();
+					Toast.makeText(mActivity, "Source is not recognisable", Toast.LENGTH_LONG).show();
 					return;
 				} else if( mOfferRide.getDestination() == null) {
-					Toast.makeText(getActivity(), "Destination is not recognisable", Toast.LENGTH_LONG).show();
+					Toast.makeText(mActivity, "Destination is not recognisable", Toast.LENGTH_LONG).show();
 					return;
 				}  
 				

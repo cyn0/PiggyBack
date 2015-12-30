@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.widget.Toast;
@@ -27,7 +28,7 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 
-public abstract class BaseMapActivity extends Activity {
+public abstract class BaseMapActivity extends FragmentActivity {
   
 	private static final String TAG = "MAP activity";
 	protected LocationRequest mLocationRequest;
@@ -209,7 +210,8 @@ public abstract class BaseMapActivity extends Activity {
 	            if(CurrentRoute != null)
 	            	CurrentRoute.remove();
 	            
-	            CurrentRoute = map.addPolyline(lineOptions);
+	            if(lineOptions != null)
+	            	CurrentRoute = map.addPolyline(lineOptions);
 	            
 	        }
 	    }

@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import com.example.datamodel.OfferRide;
 import com.example.http.Httphandler;
 import com.example.http.Httphandler.HttpDataListener;
+import com.example.utils.CommonUtil;
 import com.example.utils.TimeHelper;
 
 import android.app.ProgressDialog;
@@ -17,6 +18,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,20 +26,22 @@ public class RideDetailsFragment extends Fragment {
     // Store instance variables
     private String title, ride_id;
     private int page;
-    private OfferRide mOfferRide;
+    static private OfferRide mOfferRide = null;
     private FragmentActivity mFragmentActivity;
     
     TextView sourceTextView, destinationTextView, forwardStartTimeTextView, returnStartTimeTextView;
     TextView tripStartDateTextView, isRecurringTextView, isRoundTripTextView, priceTextView;
-    
+    Button negativeButton;
+    ScrollView scrollView;
     // newInstance constructor for creating fragment with arguments
-    public static RideDetailsFragment newInstance(int page, String title, String ride_id) {
+    public static RideDetailsFragment newInstance(int page, String title, String ride_id, OfferRide offerRide) {
     	RideDetailsFragment fragmentFirst = new RideDetailsFragment();
         Bundle args = new Bundle();
         args.putInt("someInt", page);
         args.putString("someTitle", title);
         args.putString("ride_id", ride_id);
         fragmentFirst.setArguments(args);
+        mOfferRide = offerRide;
         return fragmentFirst;
     }
 
@@ -57,8 +61,9 @@ public class RideDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_ride_details, container, false);
         
-        Button done = (Button) view.findViewById(R.id.next);
-        Button negativeButton = (Button) view.findViewById(R.id.negative);
+//        Button done = (Button) view.findViewById(R.id.next);
+        scrollView = (ScrollView) view.findViewById(R.id.sv);
+        negativeButton = (Button) view.findViewById(R.id.negative);
         sourceTextView = (TextView) view.findViewById(R.id.source);
         destinationTextView = (TextView) view.findViewById(R.id.destination);
         forwardStartTimeTextView = (TextView) view.findViewById(R.id.forwardStartTime);
@@ -69,20 +74,18 @@ public class RideDetailsFragment extends Fragment {
         priceTextView = (TextView) view.findViewById(R.id.price);
         
         
-        done.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-			}
-		});
+//        done.setOnClickListener(new View.OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//			}
+//		});
+        scrollView.setVisibility(View.GONE);
+        if(mOfferRide != null){
+        	setViews();
+        } else {
+        	fetchData();
+        }
         
-        negativeButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				deleteRide();
-			}
-		});
-        fetchData();
-		
         return view;
     }
     
@@ -92,6 +95,18 @@ public class RideDetailsFragment extends Fragment {
     	isRecurringTextView.setText("Recurring : " + mOfferRide.isRecurring());
     	isRoundTripTextView.setText("Round Trip : " + mOfferRide.isRoundTrip());
     	
+    	if(CommonUtil.getSharedInstance().amIOfferer(mOfferRide)){
+        	negativeButton.setVisibility(View.VISIBLE);
+        } else {
+        	negativeButton.setVisibility(View.GONE);
+        }
+        negativeButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				deleteRide();
+			}
+		});
+        
     	long millis;
     	millis = mOfferRide.getStartTime();
     	String dateString;
@@ -117,6 +132,8 @@ public class RideDetailsFragment extends Fragment {
     	}else{
     		priceTextView.setText("Price : Free of charge");
     	}
+    	
+    	scrollView.setVisibility(View.VISIBLE);
     }
     
     public void fetchData(){
@@ -160,6 +177,7 @@ public class RideDetailsFragment extends Fragment {
 					boolean success = jsonResponse.getBoolean("success");
 					if(success){
 						Toast.makeText(mFragmentActivity, getString(R.string.delete_success), Toast.LENGTH_LONG).show();
+						getFragmentManager().popBackStackImmediate();
 					} else {
 						Toast.makeText(mFragmentActivity, getString(R.string.delete_error), Toast.LENGTH_LONG).show();
 					}

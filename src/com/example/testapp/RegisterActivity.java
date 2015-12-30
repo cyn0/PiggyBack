@@ -17,6 +17,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -29,6 +30,7 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 public class RegisterActivity extends ActionBarActivity {
 
 	Button btnGCMRegister;
+	CheckBox termsCheckBox;
 	GoogleCloudMessaging gcm;
 	Context context;
 
@@ -51,18 +53,21 @@ public class RegisterActivity extends ActionBarActivity {
 		}
 		phoneEditText = (EditText) findViewById(R.id.editText1);
 		btnGCMRegister = (Button) findViewById(R.id.btnGCMRegister);
+		termsCheckBox = (CheckBox) findViewById(R.id.termsCheckBox);
+		
 		btnGCMRegister.setOnClickListener( new View.OnClickListener() {
 			public void onClick(View v) {
+				if(!termsCheckBox.isChecked()){
+					Toast.makeText(context, "Please agree to terms and conditions", Toast.LENGTH_LONG).show();
+					return;
+				}
+				
 				if(isPhoneNumberValid()){
 					if (TextUtils.isEmpty(User.getSharedInstance().getPhoneNumber())) {
-						if(verifyPhone()){
-							registerGCM();
-						}
-					}
-					if (TextUtils.isEmpty(User.getSharedInstance().getGCMRegistrationId())) {
+						verifyPhone();
+					} else	if (TextUtils.isEmpty(User.getSharedInstance().getGCMRegistrationId())) {
 						registerGCM();
-					} 
-					if(!isRegistrationSuccess()){
+					} else if(!isRegistrationSuccess()){
 						postRegistrationDataToServer();
 					} else {
 						directToMainActivity();
@@ -190,6 +195,8 @@ public class RegisterActivity extends ActionBarActivity {
 	}
 	
 	private boolean verifyPhone(){
+		User.getSharedInstance().setPhoneNumber(phoneEditText.getText().toString());
+		registerGCM();
 		return true;
 	}
 }

@@ -9,7 +9,6 @@
     <string name="sep_accepted_rides">Accepted rides</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="action_example">Example action</string>
     <string name="action_settings">Settings</string>
     <string name="share_with">Share with..</string>
 	<string name="share_text">Hey! I\'m sharing  a ride with you. </string>
@@ -24,13 +23,13 @@
     <string name="accept_error">Something went wrong, please try after sometime. Is connected to internet?</string>
     <string name="request_success">Request has been sent for the ride</string>
     <string name="request_error">Something went wrong, please try after sometime. Is connected to internet?</string>
-    <string name="reject_success">Request has been sent for the ride</string>
+    <string name="reject_success">Request declined</string>
     <string name="reject_error">Something went wrong, please try after sometime. Is connected to internet?</string>
     <string name="delete_success">Ride successfully deleted</string>
     <string name="delete_error">Something went wrong in deleting the ride. Try after sometime.</string>
     <string name="feeds_error">Unable to fetch feeds. Something went wrong, please try after sometime. Is connected to internet?</string>
     <string name="app_intro">GETTING STARTED</string>
-    
+    <string name="ride_not_found">Ride you requested is removed</string>
     
     <string name="skip_button">SKIP</string>
     <string name="done_button">DONE</string>

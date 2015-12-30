@@ -32,11 +32,13 @@
             android:layout_margin="5dp"
             android:drawableRight="@drawable/curr_loc"
             android:drawablePadding="3dp"
+            android:drawingCacheQuality="low"
             android:layout_weight="1.32"
             android:background="@drawable/border"
             android:ems="13"
             android:hint="Source"
-            android:paddingLeft="5dp" />
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp" />
         
         <AutoCompleteTextView
             android:id="@+id/destinationTextView"
@@ -50,6 +52,7 @@
             android:ems="13"
             android:background="@drawable/border"
             android:paddingLeft="5dp"
+            android:paddingRight="5dp"
             android:hint="Destination" />
 
     </LinearLayout>
@@ -62,7 +65,7 @@
         android:textColor="#ffffff"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/textView1"
-        android:layout_marginTop="37dp"
+        android:layout_marginTop="15dp"
         android:background="#33B5E5"
         android:textStyle="bold"
         android:text="Trip info" />

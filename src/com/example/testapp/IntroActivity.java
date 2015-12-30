@@ -1,4 +1,5 @@
 package com.example.testapp;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -41,7 +42,7 @@ public class IntroActivity extends AppIntro{
 		addSlide(SampleSlide.newInstance(R.layout.intro));
         addSlide(SampleSlide.newInstance(R.layout.intro3));
         addSlide(SampleSlide.newInstance(R.layout.intro4));
-
+        showSkipButton(false);
         setZoomAnimation();
     }
 
@@ -52,17 +53,16 @@ public class IntroActivity extends AppIntro{
 
     @Override
     public void onDonePressed() {
-    // Do something when users tap on Done button.
+    	Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
+		startActivity(intent);
     }
 
         @Override
     public void onSlideChanged() {
-    // Do something when the slide changes.
     }
 
     @Override
     public void onNextPressed() {
-    // Do something when users tap on Next button.
     }
 
 }

@@ -4,11 +4,13 @@ import java.util.List;
 import java.util.Locale;
 
 import com.example.datamodel.OfferRide;
+import com.example.datamodel.User;
 import com.example.testapp.MainActivity;
 import com.example.testapp.MapActivity;
 import com.example.testapp.R;
 import com.google.android.gms.maps.model.LatLng;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -39,15 +41,17 @@ public class CommonUtil {
 		}
 	}
 	
-	public void shareTextMessage(String message, Context context){
-//		String ride_id = jsonResponse.getString("ride_id");
-//		String share_text = getString(R.string.share_text);
+	public void shareMessage(String ride_id, Activity mContext){
+		String message =  mContext.getString(R.string.share_text);
+		message += " http://ShareDrive.com/" + ride_id;
+		
 		Intent sendIntent = new Intent();
 		sendIntent.setAction(Intent.ACTION_SEND);
-		
 		sendIntent.putExtra(Intent.EXTRA_TEXT, message);
 		sendIntent.setType("text/plain");
-		context.startActivity(Intent.createChooser(sendIntent, context.getResources().getText(R.string.share_with)));
+		sendIntent.putExtra("exit_on_sent", true);
+//		mContext.startActivity(Intent.createChooser(sendIntent, mContext.getResources().getText(R.string.share_with)));
+		mContext.startActivityForResult(Intent.createChooser(sendIntent, mContext.getResources().getText(R.string.share_with)), 1); //(Intent.createChooser(sendIntent, mContext.getResources().getText(R.string.share_with)));
 	}
 	
 	public Address getAddress(Context context, LatLng latLng){
@@ -78,5 +82,11 @@ public class CommonUtil {
 	    }
 
 	    return contactName;
+	}
+	
+	public boolean amIOfferer(OfferRide ride){
+		String myId = User.getSharedInstance().getUserId();
+		String offererId = ride.getOfferedUserId();
+		return myId.equals(offererId);
 	}
 }

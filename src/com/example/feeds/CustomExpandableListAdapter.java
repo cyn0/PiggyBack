@@ -14,6 +14,7 @@ import com.example.feeds.CustomListAdapter.ViewHolder;
 import com.example.http.Httphandler;
 import com.example.http.Httphandler.HttpDataListener;
 import com.example.testapp.R;
+import com.example.testapp.RideDetailsFragment;
 import com.example.utils.CommonUtil;
 import com.example.utils.TimeHelper;
  
@@ -26,6 +27,9 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.net.ParseException;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +37,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -45,8 +50,7 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
     private static final int TYPE_SEPARATOR = 1;
     
     private Activity mActivity;
-//    private List<String> _listDataHeader; // header titles
-//    private HashMap<String, List<String>> _listDataChild;
+    private ExpandableListView listView;
  
     List<OfferRide> rides;
     private TreeSet mSeparatorsSet = new TreeSet();
@@ -57,9 +61,10 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 ////        this._listDataChild = listChildData;
 //    }
 
-    public CustomExpandableListAdapter(Activity activity, List<OfferRide> acceptedRides) {
+    public CustomExpandableListAdapter(Activity activity, ExpandableListView listView, List<OfferRide> acceptedRides) {
         this.mActivity = activity;        
-        this.rides = acceptedRides;      
+        this.rides = acceptedRides; 
+        this.listView = listView;
     }
     
     public void addSeparatorItem(final int item) {
@@ -97,19 +102,22 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
         }
  
         TextView txtListChild = (TextView) convertView.findViewById(R.id.title);
-        LinearLayout layout = (LinearLayout) convertView.findViewById(R.id.layout);
-        ImageView accept = (ImageView) convertView.findViewById(R.id.accept);
+        final LinearLayout layout = (LinearLayout) convertView.findViewById(R.id.layout);
+        final ImageView accept = (ImageView) convertView.findViewById(R.id.accept);
         ImageView reject = (ImageView) convertView.findViewById(R.id.reject);
         
-        txtListChild.setText(child.getContact_name());
-        switch(child.getType()){
-        	case ACCEPT:
-        		accept.setVisibility(View.GONE);
-        		layout.setBackgroundResource(R.drawable.list_child_accept);
-        		break;
-        	case REQUEST:
-        		layout.setBackgroundResource(R.drawable.list_child_bg);
-        		break;
+        String title = child.getContact_name();
+        if(TextUtils.isEmpty(title)){
+        	title = child.getPhone_number();
+        }
+        txtListChild.setText(title);
+        
+        if(rides.get(groupPosition).getAcceptedUsers().contains(child)){
+        	accept.setVisibility(View.GONE);
+    		layout.setBackgroundResource(R.drawable.list_child_accept);
+        } else{
+        	accept.setVisibility(View.VISIBLE);
+    		layout.setBackgroundResource(R.drawable.list_child_bg);
         }
         
         accept.setOnClickListener(new OnClickListener() {
@@ -117,7 +125,16 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 			public void onClick(View v) {
 				OfferRide ride = rides.get(groupPosition);
 				ride.setUserUserId(child.getId());
-				handleAcceptClicked(ride);
+				handleAcceptDeclineClicked(groupPosition, childPosition, true);
+			}
+		});
+        
+        reject.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				OfferRide ride = rides.get(groupPosition);
+				ride.setUserUserId(child.getId());
+				handleAcceptDeclineClicked(groupPosition, childPosition, false);
 			}
 		});
         
@@ -148,25 +165,6 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
     public long getGroupId(int groupPosition) {
         return groupPosition;
     }
- 
-//    @Override
-//    public View getGroupView(int groupPosition, boolean isExpanded,
-//            View convertView, ViewGroup parent) {
-//        String headerTitle = (String) getGroup(groupPosition);
-//        if (convertView == null) {
-//            LayoutInflater infalInflater = (LayoutInflater) this._context
-//                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//            convertView = infalInflater.inflate(R.layout.feed_row, null);
-//        }
-// 
-//        TextView lblListHeader = (TextView) convertView
-//                .findViewById(R.id.title);
-//        lblListHeader.setTypeface(null, Typeface.BOLD);
-//        lblListHeader.setText(headerTitle);
-// 
-//        return convertView;
-//    }
- 
     
     @Override
 	public int getGroupType(int groupPosition) {
@@ -185,12 +183,11 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 
     	int type = getGroupType(groupPosition);
         ViewHolder holder = null;
-        OfferRide ride = rides.get(groupPosition);
+        final OfferRide ride = rides.get(groupPosition);
         
         
         if (convertView == null){
-        	LayoutInflater inflater = (LayoutInflater) this.mActivity
-                  .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        	LayoutInflater inflater = (LayoutInflater) this.mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         	holder = new ViewHolder();
         	switch (type) {
             case TYPE_ITEM:
@@ -244,13 +241,22 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
         	 holder.title.setText(holder.titleString);
              holder.time.setText(holder.timeString);
              holder.place.setText(holder.placeString);
-             holder.year.setText(holder.yearString);
+             String text = "";
+             int acceptedSize = ride.getAcceptedUsers().size();
+             int requestedSize = ride.getRequestedUsers().size();
+             if(requestedSize > 0){
+            	 text = "Request:1 ";
+             }
+             if(acceptedSize > 0){
+            	 text = text + "Accepted:1";
+             }
+             holder.year.setText(text);
              holder.option.setImageResource(R.drawable.ic_drawer);
              holder.option.setOnClickListener(new OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
-					handleOptionImageClicked();
+					handleOptionImageClicked(ride);
 				}
 			});
             break;
@@ -279,6 +285,12 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
         
     }
     
+    class ChildViewHolder{
+    	TextView title, time, place, year; 
+        ImageView accept, decline;
+        LinearLayout layout;
+        
+    }
     
     @Override
     public boolean hasStableIds() {
@@ -290,7 +302,7 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
         return true;
     }
     
-    public void handleOptionImageClicked(){
+    public void handleOptionImageClicked(final OfferRide ride){
 
     	AlertDialog.Builder builderSingle = new AlertDialog.Builder(mActivity);
 	        builderSingle.setTitle("Options");
@@ -315,8 +327,16 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 	                    public void onClick(DialogInterface dialog, int which) {
 	                        switch (which) {
 							case 0:
+								FragmentManager fragmentManager = ((FragmentActivity)mActivity).getSupportFragmentManager();
+								fragmentManager
+									.beginTransaction()
+									.replace(R.id.container,
+										RideDetailsFragment.newInstance(2, "Ride details", ride.getRideId(), ride))
+									.addToBackStack(null)
+									.commit();
 								break;
 							case 1:
+								CommonUtil.getSharedInstance().shareMessage(ride.getRideId(), mActivity);
 								break;
 							case 2:
 								break;
@@ -330,11 +350,15 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 
     }
     
-    public void handleAcceptClicked(OfferRide ride){
+    
+    public void handleAcceptDeclineClicked(final int groupPosition, final int childPosition, final boolean accept){
     	final ProgressDialog pDialog = new ProgressDialog(mActivity);
         pDialog.setMessage("Updating...");
         pDialog.show();
-    	Httphandler.getSharedInstance().acceptRide(ride, new HttpDataListener() {
+        final OfferRide ride = rides.get(groupPosition);
+        
+        final AnotherUser child = (AnotherUser) getChild(groupPosition, childPosition);
+        HttpDataListener dataListener = new HttpDataListener() {
 			
 			@Override
 			public void onError(Exception e) {
@@ -349,14 +373,38 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 					JSONObject jsonResponse = new JSONObject(response);
 					boolean success = jsonResponse.getBoolean("success");
 					if(success){
-						Toast.makeText(mActivity, mActivity.getString(R.string.accept_success), Toast.LENGTH_LONG).show();
+						if(accept){
+							ride.getRequestedUsers().remove(child);
+							ride.getAcceptedUsers().add(child);
+							notifyDataSetChanged();
+							Toast.makeText(mActivity, mActivity.getString(R.string.accept_success), Toast.LENGTH_LONG).show();
+//							layout.setBackgroundResource(R.drawable.list_child_accept);
+//							acceptImageView.setVisibility(View.GONE);
+						} else {
+							ride.getRequestedUsers().remove(child);
+							ride.getAcceptedUsers().remove(child);
+							notifyDataSetChanged();
+//							CustomExpandableListAdapter.this.listView.expandGroup(groupPosition);
+							Toast.makeText(mActivity, mActivity.getString(R.string.reject_success), Toast.LENGTH_LONG).show();
+//							layout.setBackgroundResource(R.drawable.list_child_bg);
+						}
 					} else {
-						Toast.makeText(mActivity, mActivity.getString(R.string.accept_error), Toast.LENGTH_LONG).show();
+						
+						if(accept){
+							Toast.makeText(mActivity, mActivity.getString(R.string.accept_error), Toast.LENGTH_LONG).show();
+						} else {
+							Toast.makeText(mActivity, mActivity.getString(R.string.reject_error), Toast.LENGTH_LONG).show();
+						}
 					}
 				}catch(JSONException e){
 					e.printStackTrace();
 				}
 			}
-		});
+		};
+		if(accept){
+			Httphandler.getSharedInstance().acceptRide(ride, dataListener);
+		} else {
+			Httphandler.getSharedInstance().declineRide(ride, dataListener);
+		}
     }
 }

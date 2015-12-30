@@ -3,6 +3,8 @@ package com.example.utils;
 public class Constants {
 	
 	public static String OFFER_RIDE_OBJECT = "offer_ride";
+	public static String GCM_MSG_OBJECT = "gcm_msg";
+	public static String UPDATE_LIST_VIEW = "UPDATE_LIST_VIEW_PGGYBACk";
 	public static String PAGE = "page";
 	
 	public	static final String GOOGLE_PROJECT_ID = "675435775839";

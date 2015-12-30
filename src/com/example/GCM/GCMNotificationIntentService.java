@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.example.datamodel.GcmMessage;
+import com.example.utils.Constants;
 import com.example.utils.Notification;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
@@ -34,12 +35,11 @@ public class GCMNotificationIntentService extends IntentService {
 				Notification.sendNotification("Notification","Deleted messages on server: "	+ extras.toString(), this, 1);
 			} else if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
 				handleGCMMessage(extras);
-				Log.i(TAG, "Received: " + extras.toString());
+				Log.d(TAG, "Received: " + extras.toString());
 			}
 		}
 		GcmBroadcastReceiver.completeWakefulIntent(intent);
-		
-		sendBroadcast(new Intent("UniqueMsgs"));
+
 		//mlisteners.onGCMMsgReceive();
 	}
 	
@@ -47,7 +47,12 @@ public class GCMNotificationIntentService extends IntentService {
 	private void handleGCMMessage(Bundle extras){
 		GcmMessage gcmMessage = GcmMessage.parseGcmMessage(extras);
 //		if(getNotification)
-			Notification.sendNotification(gcmMessage.getTitle(), gcmMessage.getMessage(), this, NOTIFICATION_ID);
+		Notification.sendNotification(gcmMessage.getTitle(), gcmMessage.getMessage(), this, NOTIFICATION_ID);
+		
+		Intent intent = new Intent(Constants.UPDATE_LIST_VIEW);
+	    intent.putExtra(Constants.GCM_MSG_OBJECT, gcmMessage);
+	    //send broadcast
+	    sendBroadcast(intent);
 	}
 	
 	

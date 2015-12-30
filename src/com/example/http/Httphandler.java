@@ -30,6 +30,7 @@ public class Httphandler {
     private final String POST_OFFERED_RIDE = "/ride";
     private final String POST_ACCEPT_RIDE = "/ride/accept";
     private final String POST_REQUEST_RIDE = "/ride/request";
+    private final String POST_DECLINE_RIDE = "/ride/decline";
     private final String POST_REGISTER = "/register";
     
 	private String TAG = "Http error";
@@ -71,6 +72,12 @@ public class Httphandler {
     
     public void requestRide(OfferRide mRide, HttpDataListener dataListener){
         final String url = SERVER_BASE_URL + POST_REQUEST_RIDE;
+        this.mHttpDataListener = dataListener;
+        new AsyncHttpTask().execute(url, "POST", mRide.toJSON().toString());
+    }
+    
+    public void declineRide(OfferRide mRide, HttpDataListener dataListener){
+        final String url = SERVER_BASE_URL + POST_DECLINE_RIDE;
         this.mHttpDataListener = dataListener;
         new AsyncHttpTask().execute(url, "POST", mRide.toJSON().toString());
     }
@@ -137,15 +144,14 @@ public class Httphandler {
 			} catch (Exception e) {
 				Log.d(TAG, e.getLocalizedMessage());
 			}
-			return result; //"Failed to fetch data!";
+			return result;
 		}
 
 		@Override
 		protected void onPostExecute(Integer result) {
-            /* Download complete. Lets update UI */
 			if(result == 1){
 				mHttpDataListener.onDataAvailable(response);
-			}else{
+			} else {
 				mHttpDataListener.onError(new Exception("Status code not OK."));
 			}
 		}

@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.example.datamodel.AnotherUser.USER_TYPE;
 import com.example.utils.TimeHelper;
@@ -157,6 +158,7 @@ public class OfferRide extends Ride{
 			JSONObject root = new JSONObject(input);
 			
 //			mOfferRide.setUserId(root.getString(KEY_USER_ID));
+			Log.d("input from fromStrinf", input);
 			mOfferRide.setOfferedUserId(root.getString(KEY_OFFERED_USER_ID));
 			mOfferRide.setUserUserId(root.getString(KEY_USER_USER_ID));
 			
@@ -212,6 +214,8 @@ public class OfferRide extends Ride{
 				JSONObject w = wp.getJSONObject(i);
 				temp_lat = w.getDouble(KEY_LATITUDE);
 				temp_long = w.getDouble(KEY_LONGITUDE);
+				LatLng wayPoint = new LatLng(temp_lat, temp_long);
+				mOfferRide.addWayPoint(wayPoint);
 			}
 			
 			if(!root.isNull(KEY_REQUESTED_USERS)){
