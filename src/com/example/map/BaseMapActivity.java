@@ -11,6 +11,8 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -113,11 +115,17 @@ public abstract class BaseMapActivity extends FragmentActivity {
 	
 	  
 	  
-	  public void drawRoute(LatLng source, LatLng destination, ArrayList<LatLng> wayPoints){		  
-		  String url = MapHelper.getDirectionsUrl(source, destination, wayPoints);
-			 
-          DownloadTask downloadTask = new DownloadTask();
-          downloadTask.execute(url);
+	  public void drawRoute(final LatLng source, final LatLng destination, final ArrayList<LatLng> wayPoints){
+		  
+		new Handler().post(new Runnable() {
+			@Override
+			public void run() {
+				String url = MapHelper.getDirectionsUrl(source, destination, wayPoints);
+			    DownloadTask downloadTask = new DownloadTask();
+			    downloadTask.execute(url);
+			}
+		});
+		  
 	  }
 	  
 	  @Override
@@ -130,7 +138,6 @@ public abstract class BaseMapActivity extends FragmentActivity {
 	  private class DownloadTask extends AsyncTask<String, Void, String>{
 		  
 		    boolean success = true;
-	        // Downloading data in non-ui thread
 	        @Override
 	        protected String doInBackground(String... url) {
 	 
@@ -160,6 +167,7 @@ public abstract class BaseMapActivity extends FragmentActivity {
 	  
 	  private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String,String>>> >{
 		  
+		  	PolylineOptions lineOptions = null;
 	        // Parsing the data in non-ui thread
 	        @Override
 	        protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
@@ -174,39 +182,43 @@ public abstract class BaseMapActivity extends FragmentActivity {
 	            }catch(Exception e){
 	                e.printStackTrace();
 	            }
+	            
+	            
+	            if(routes != null){
+	            	List<List<HashMap<String, String>>> result = routes;
+		            ArrayList<LatLng> points = null;
+		 
+		            // Traversing through all the routes
+		            for(int i=0;i<result.size();i++){
+		                points = new ArrayList<LatLng>();
+		                lineOptions = new PolylineOptions();
+		 
+		                // Fetching i-th route
+		                List<HashMap<String, String>> path = result.get(i);
+		 
+		                // Fetching all the points in i-th route
+		                for(int j=0;j<path.size();j++){
+		                    HashMap<String,String> point = path.get(j);
+		 
+		                    double lat = Double.parseDouble(point.get("lat"));
+		                    double lng = Double.parseDouble(point.get("lng"));
+		                    LatLng position = new LatLng(lat, lng);
+		                    
+		                    points.add(position);
+		                }
+		 
+		                // Adding all the points in the route to LineOptions
+		                lineOptions.addAll(points);
+		                lineOptions.width(5);
+		                lineOptions.color(Color.RED);
+		            }
+	            }
 	            return routes;
 	        }
 	 
 	        // Executes in UI thread, after the parsing process
 	        @Override
 	        protected void onPostExecute(List<List<HashMap<String, String>>> result) {
-	            ArrayList<LatLng> points = null;
-	            PolylineOptions lineOptions = null;
-	 
-	            // Traversing through all the routes
-	            for(int i=0;i<result.size();i++){
-	                points = new ArrayList<LatLng>();
-	                lineOptions = new PolylineOptions();
-	 
-	                // Fetching i-th route
-	                List<HashMap<String, String>> path = result.get(i);
-	 
-	                // Fetching all the points in i-th route
-	                for(int j=0;j<path.size();j++){
-	                    HashMap<String,String> point = path.get(j);
-	 
-	                    double lat = Double.parseDouble(point.get("lat"));
-	                    double lng = Double.parseDouble(point.get("lng"));
-	                    LatLng position = new LatLng(lat, lng);
-	                    
-	                    points.add(position);
-	                }
-	 
-	                // Adding all the points in the route to LineOptions
-	                lineOptions.addAll(points);
-	                lineOptions.width(5);
-	                lineOptions.color(Color.RED);
-	            }
 	            if(CurrentRoute != null)
 	            	CurrentRoute.remove();
 	            

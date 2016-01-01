@@ -13,6 +13,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -70,7 +72,8 @@ public class MapActivity extends BaseMapActivity{
 	}
 	private SlideButtonState currentSlideButtonState;
 	private boolean isOpenFromLink = false;
-	
+	private boolean isInitialRouteDrawn = false;
+	private boolean isMapLoaded = false;
 	protected void addWayPoint(LatLng point){
 		Marker marker = addMarker(point);
 		marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.waypoint_marker));		
@@ -96,33 +99,46 @@ public class MapActivity extends BaseMapActivity{
 	}
 	  
 	protected void handleMapClicked(LatLng point){
-//		slidingUpPanelLayout.setPanelState(PanelState.HIDDEN);
+		slidingUpPanelLayout.setPanelState(PanelState.HIDDEN);
 	}
 	
 	protected void handleOnMapLoaded(){
-		if(RideType == RideType.OFFER){
+		isMapLoaded = true;
+		if(!isInitialRouteDrawn){
 			refreshRoute();
-			refreshMapBoundary();
 		} 
 		
 	}
 	  
 	protected void refreshMapBoundary(){
-		LatLng source = mRide.getSource();
-		LatLng destination = mRide.getDestination();
+		new Handler().post(new Runnable() {
+			@Override
+			public void run() {
+				LatLng source = mRide.getSource();
+				LatLng destination = mRide.getDestination();
+				
+				latLngBuilder = new LatLngBounds.Builder();
+				latLngBuilder.include(source);
+				latLngBuilder.include(destination);
+			    
+				for(LatLng waypoint : mRide.getWayPoints()){
+					latLngBuilder.include(waypoint);
+				}
+				final LatLngBounds bounds = latLngBuilder.build();
+				
+				final int padding = 150; 
+				new Handler(Looper.getMainLooper()).post(new Runnable() {
+					
+					@Override
+					public void run() {
+						CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+						map.moveCamera(cu);
+					}
+				});
+				
+			}
+		});
 		
-		latLngBuilder = new LatLngBounds.Builder();
-		latLngBuilder.include(source);
-		latLngBuilder.include(destination);
-	    
-		for(LatLng waypoint : mRide.getWayPoints()){
-			latLngBuilder.include(waypoint);
-		}
-		LatLngBounds bounds = latLngBuilder.build();
-		
-		int padding = 200; // offset from edges of the map in pixels
-		CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-		map.moveCamera(cu);
 	}
 	  
 	
@@ -166,14 +182,6 @@ public class MapActivity extends BaseMapActivity{
 			setMapListeners();
 			
 	  }
-	
-	  
-	  @Override
-	  public boolean onCreateOptionsMenu(Menu menu) {
-	    //getMenuInflater().inflate(R.menu.activity_main, menu);
-	    return true;
-	  }
-	  
 	
 //	@Override
 //	public void onBackPressed() {
@@ -310,7 +318,6 @@ public class MapActivity extends BaseMapActivity{
 		});
 	}
 	public void postRideDetails(){
-		boolean newRide = true;
 		final ProgressDialog progress = ProgressDialog.show(this, getString(R.string.server_request_dialog_title),
 			    getString(R.string.server_request_dialog_title), true);
 		HttpDataListener mDataListener = new HttpDataListener() {				
@@ -339,12 +346,9 @@ public class MapActivity extends BaseMapActivity{
 				}
 			}
 		};
-		Log.d("rideid", mRide.getRideId());
 		if(TextUtils.isEmpty(mRide.getRideId())){
-			newRide = true;
 			Httphandler.getSharedInstance().postNewRide((OfferRide)mRide, mDataListener);
 		} else {
-			newRide = false;
 			Httphandler.getSharedInstance().updateRide((OfferRide)mRide, mDataListener);
 		}
 		
@@ -388,8 +392,9 @@ public class MapActivity extends BaseMapActivity{
 						fetchUserData();
 						setViews();
 						doInitialMapSetUps();
-						refreshRoute();
-						refreshMapBoundary();
+						
+						if(isMapLoaded)
+							refreshRoute();
 					}
 				}
 	        };
@@ -399,6 +404,8 @@ public class MapActivity extends BaseMapActivity{
 	}
 	
 	private void refreshRoute(){
+		Log.d(TAG, "Drawing route");
+		isInitialRouteDrawn = true;
 		drawRoute(mRide.getSource(), mRide.getDestination(), mRide.getWayPoints());
 		refreshMapBoundary();
 	}
