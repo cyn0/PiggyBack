@@ -3,6 +3,7 @@ package com.example.utils;
 import java.util.List;
 import java.util.Locale;
 
+import com.example.datamodel.AnotherUser;
 import com.example.datamodel.OfferRide;
 import com.example.datamodel.User;
 import com.example.testapp.MainActivity;
@@ -20,6 +21,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.provider.ContactsContract.PhoneLookup;
+import android.util.Log;
 
 public class CommonUtil {
 	
@@ -88,5 +90,29 @@ public class CommonUtil {
 		String myId = User.getSharedInstance().getUserId();
 		String offererId = ride.getOfferedUserId();
 		return myId.equals(offererId);
+	}
+	
+	public boolean HaveIRequested(OfferRide ride, User mUser){
+		if(mUser == null)
+			return false;
+		String rideId = ride.getRideId();
+		for(OfferRide reqRide : mUser.getRequestedRides()){
+			if(reqRide.getRideId().equals(rideId)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean HaveIAccepted(OfferRide ride, User mUser){
+		if(mUser == null)
+			return false;
+		String rideId = ride.getRideId();
+		for(OfferRide reqRide : mUser.getAcceptedRides()){
+			if(reqRide.getRideId().equals(rideId)){
+				return true;
+			}
+		}
+		return false;
 	}
 }

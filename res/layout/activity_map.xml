@@ -45,7 +45,6 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:textSize="20sp"
-                    android:text="MY RIDE"
                     android:gravity="center_vertical"
                     android:textStyle="bold"
                     android:paddingLeft="10dp"/>
@@ -55,11 +54,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:textSize="15sp"
-                    android:gravity="center_vertical|right"
-                    android:text="Share"/>
+                    />
 
             </LinearLayout>
-
+			<!--  android:gravity="center_vertical" -->
             <ScrollView
                 android:id="@+id/sv"
                 android:layout_width="match_parent"

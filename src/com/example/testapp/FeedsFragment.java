@@ -10,6 +10,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -26,9 +27,12 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.autocomplete.MyAutoComplete;
@@ -63,8 +67,11 @@ public class FeedsFragment extends Fragment {
     ExpandableListView expListView;
     final ArrayList<OfferRide> listItems = new ArrayList<OfferRide>();
     CustomExpandableListAdapter adapter;
-    FrameLayout barker;
     
+    LinearLayout instructionLayout;
+    TextView  instructionTextView;
+    ImageView instructionImageView;
+    User user;
     public static FeedsFragment newInstance(int page, String title) {
     	FeedsFragment fragmentFirst = new FeedsFragment();
         Bundle args = new Bundle();
@@ -91,10 +98,39 @@ public class FeedsFragment extends Fragment {
 
         adapter = new CustomExpandableListAdapter(mActivity, expListView, listItems);
         expListView = (ExpandableListView) view.findViewById(R.id.lvExp);
-        barker = (FrameLayout) view.findViewById(R.id.barker);
+        
+        instructionLayout = (LinearLayout) view.findViewById(R.id.noItemsLayout);
+        instructionImageView = (ImageView) view.findViewById(R.id.instructionImage);
+        instructionTextView = (TextView) view.findViewById(R.id.instruction);
         
         expListView.setAdapter(adapter);
-        barker.setOnClickListener(new OnClickListener() {
+        
+        expListView.setOnGroupClickListener(new OnGroupClickListener() {
+			@Override
+			public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
+				
+				//TO-DO verify...
+				OfferRide ride = listItems.get(groupPosition);
+				if(ride.getAcceptedUsers().size() == 0
+						&& ride.getRequestedUsers().size() == 0){
+					FragmentManager fragmentManager = ((FragmentActivity)mActivity).getSupportFragmentManager();
+					fragmentManager
+						.beginTransaction()
+						.replace(R.id.container,
+							RideDetailsFragment.newInstance(2, "Ride details", ride.getRideId(), ride, user))
+						.addToBackStack(null)
+						.commit();
+				} else if (parent.isGroupExpanded(groupPosition)) {
+                    parent.collapseGroup(groupPosition);
+                } else {
+                   parent.expandGroup(groupPosition);
+                }
+				
+				return true;
+			}
+		});
+        
+        ((FrameLayout) view.findViewById(R.id.barker)).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				openNewRideFragment();
@@ -147,21 +183,28 @@ public class FeedsFragment extends Fragment {
 				public void onError(Exception e) {
 					pDialog.dismiss();
 					e.printStackTrace();
-					Toast.makeText(mActivity, getString(R.string.feeds_error), Toast.LENGTH_LONG).show();
+					instructionTextView.setText(getString(R.string.feeds_error));
+					instructionImageView.setImageResource(R.drawable.hibernate);
+					instructionLayout.setVisibility(View.VISIBLE);
 				}
 				
 				@Override
 				public void onDataAvailable(String response) {		
-					User user = User.fromString(response);
+					user = User.fromString(response);
 					listItems.clear();
 					int acceptedCount = user.getAcceptedRides().size();
 					int offeredCount = user.getOfferedRides().size();
 					int requestedCount = user.getRequestedRides().size();
+					
 					Log.d(TAG, "Accepted rides - "+ acceptedCount + " Offered rides " + offeredCount+ " requested rides " + requestedCount);
 					
-//					if(acceptedCount == 0 && offeredCount == 0){
-//						barker.setVisibility(View.VISIBLE);
-//					}
+					if(acceptedCount == 0 && offeredCount == 0 && requestedCount == 0){
+						instructionLayout.setVisibility(View.VISIBLE);
+						instructionTextView.setText(getString(R.string.instruction_no_ride));
+						instructionImageView.setImageResource(R.drawable.climo_sloth__29841_zoom);
+					} else {
+						instructionLayout.setVisibility(View.GONE);
+					}
 					
 					if(acceptedCount > 0){
 						adapter.addSeparatorItem(0);
@@ -195,7 +238,6 @@ public class FeedsFragment extends Fragment {
 			};
 			
 		Httphandler.getSharedInstance().getUser(User.getSharedInstance().getUserId(), dataListener);
-
     }
     
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {

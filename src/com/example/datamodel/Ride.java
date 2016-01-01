@@ -25,7 +25,7 @@ public class Ride implements Parcelable{
 	
 	private String userUserId = "";
 	
-	private String rideId;
+	private String rideId = "";
 	
 	private String sourceAddress;
 	
@@ -109,14 +109,6 @@ public class Ride implements Parcelable{
 		this.isRecurring = isRecurring;
 	}
 
-//	public ArrayList<Marker> getWayPoints() {
-//		return wayPoints;
-//	}
-//
-//	public void setWayPoints(ArrayList<Marker> wayPoints) {
-//		this.wayPoints = wayPoints;
-//	}
-	
 	public ArrayList<LatLng> getWayPoints() {
 		return wayPoints;
 	}
@@ -140,14 +132,6 @@ public class Ride implements Parcelable{
 	public void setRideId(String rideId) {
 		this.rideId = rideId;
 	}
-
-//	public String getUserId() {
-//		return userId;
-//	}
-//
-//	public void setUserId(String userId) {
-//		this.userId = userId;
-//	}
 
 	public String getOfferedUserId() {
 		return offeredUserId;
@@ -186,6 +170,7 @@ public class Ride implements Parcelable{
 		// TODO Auto-generated method stub
 		dest.writeString(offeredUserId);
 		dest.writeString(userUserId);
+		dest.writeString(rideId);
 		
 		dest.writeString(sourceAddress);
 		dest.writeString(sourceId);
@@ -221,6 +206,7 @@ public class Ride implements Parcelable{
     	
     	offeredUserId = in.readString();
 		userUserId = in.readString();
+		rideId = in.readString();
 		
     	double latitude, longitude;
     	

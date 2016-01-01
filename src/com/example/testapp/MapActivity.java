@@ -51,31 +51,26 @@ public class MapActivity extends BaseMapActivity{
 	protected LatLng selectedMarker = null;
 	
 	private Ride mRide;
+	private User muser;
 	LatLngBounds.Builder latLngBuilder;
 	  
 	protected SlidingUpPanelLayout slidingUpPanelLayout;
 	
 	TextView SlidingPanelTitle;
-	protected Button shareButton;
+	protected Button slideButton;
 	
 	private RIDE_TYPE RideType;
 	
-	protected void  showSlidingPanelWithTitle(String title) {
-//		slidingUpPanelLayout.setPanelState(PanelState.COLLAPSED);
-//		
-//		if(title != null){
-//			SlidingPanelTitle.setText(title);
-//		}
+	enum SlideButtonState {
+		DONE,
+		REQUEST,
+		REQUESTED,
+		ACCEPTED,
+		SHARE
 	}
+	private SlideButtonState currentSlideButtonState;
+	private boolean isOpenFromLink = false;
 	
-//	protected void addWayPoint(LatLng point){
-//		
-//	}
-//	
-//	protected void removeWayPoint(LatLng point){
-//		
-//	}
-
 	protected void addWayPoint(LatLng point){
 		Marker marker = addMarker(point);
 		marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.waypoint_marker));		
@@ -140,8 +135,7 @@ public class MapActivity extends BaseMapActivity{
 			slidingUpPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
 			slidingUpPanelLayout.setPanelState(PanelState.ANCHORED);
 			slidingUpPanelLayout.setAnchorPoint(0.5f);
-			mRide = (Ride) getIntent().getParcelableExtra(Constants.OFFER_RIDE_OBJECT);
-			
+			mRide = (OfferRide) getIntent().getParcelableExtra(Constants.OFFER_RIDE_OBJECT);
 			
 //			mRide = new OfferRide();
 //			mRide.setDestination(new LatLng(13.078384999999999,  80.264411));
@@ -163,31 +157,14 @@ public class MapActivity extends BaseMapActivity{
 		    final String action = getIntent().getAction();
 		    if (Intent.ACTION_VIEW.equals(action)) {
 				fetchRideDetails();
+				isOpenFromLink = true;
 			} else {
 				setViews();
 				doInitialMapSetUps();
 			}
-			
 		    
-			//map.moveCamera(CameraUpdateFactory.newLatLngZoom(rides.get(0).getSource().getPosition(), 15));
-					
-								
-//					Ride ride = DummyCurrentRide.currentRide;
-//					map.moveCamera(CameraUpdateFactory.newLatLngZoom(ride.getSource().getPosition(), 15));
-//					marker = map.addMarker(new MarkerOptions().position(ride.getSource().getPosition())
-//			  			    .title(ride.getSource().getTitle())
-//			  			    .snippet(ride.getSource().getSnippet()));
-//					showRoutesAndMarkers(ride);
-//					break;
-				
-			
-			
 			setMapListeners();
 			
-//			slidingUpPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
-//			slidingUpPanelLayout.setPanelState(PanelState.HIDDEN);
-//	        
-//			makeSlidingPanelItemsEditable(false);
 	  }
 	
 	  
@@ -198,14 +175,14 @@ public class MapActivity extends BaseMapActivity{
 	  }
 	  
 	
-	@Override
-	public void onBackPressed() {
-		if(slidingUpPanelLayout.getPanelState().compareTo(PanelState.EXPANDED) == 0){
-			slidingUpPanelLayout.setPanelState(PanelState.COLLAPSED);
-		}else{
-			super.onBackPressed();
-		}
-	}
+//	@Override
+//	public void onBackPressed() {
+//		if(slidingUpPanelLayout.getPanelState().compareTo(PanelState.EXPANDED) == 0){
+//			slidingUpPanelLayout.setPanelState(PanelState.COLLAPSED);
+//		}else{
+//			super.onBackPressed();
+//		}
+//	}
 	
 	public void doInitialMapSetUps(){
 		LatLng source = mRide.getSource();
@@ -224,16 +201,13 @@ public class MapActivity extends BaseMapActivity{
 			case OFFER:
 				Toast.makeText(mContext, "Long press on map, to add a way point", Toast.LENGTH_LONG).show();
 				break;
-			case FIND:
-				Toast.makeText(mContext, "Long press on map, to add pickup point", Toast.LENGTH_LONG).show();
-				break;
 		}
 	}
 	
 	public void setViews(){
 		
 		SlidingPanelTitle = (TextView)findViewById(R.id.SlidingPanelTitle);
-		shareButton = (Button)findViewById(R.id.share);
+		slideButton = (Button)findViewById(R.id.share);
 		FragmentManager fragmentManager = getSupportFragmentManager();
 	
 		if(CommonUtil.getSharedInstance().amIOfferer((OfferRide)mRide)){
@@ -245,55 +219,46 @@ public class MapActivity extends BaseMapActivity{
 		fragmentManager
 			.beginTransaction()
 			.replace(R.id.container,
-				RideDetailsFragment.newInstance(2, "Ride details", mRide.getRideId(), (OfferRide)mRide))
+				RideDetailsFragment.newInstance(2, "Ride details", mRide.getRideId(), (OfferRide)mRide, muser ))
 			.commit();
 	
 		switch(RideType){
 			case OFFER:
 				SlidingPanelTitle.setText("MY RIDE");
-				shareButton.setText("SHARE");
+				if(isOpenFromLink){
+					setSlideButton(SlideButtonState.SHARE);
+				} else {
+					setSlideButton(SlideButtonState.DONE);
+				}
 				break;
 			
 			case FIND:
 				SlidingPanelTitle.setText("OFFERED RIDE");
-				shareButton.setText("REQUEST");
+				setSlideButton(SlideButtonState.REQUEST);
 				break;
 		}
 
-//		editButton.setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				switch(RideType){
-//				case OFFER:
-//					Intent intent = new Intent(mContext, MainActivity.class);
-//					intent.putExtra(Constants.PAGE, OfferRideFragment.class.getName());
-//					startActivity(intent);
-//					finish();
-//					break;
-//				
-//				case FIND:
-//					CommonUtil.getSharedInstance().shareMessage(mRide.getRideId(), MapActivity.this);
-//					break;
-//			}
-//			}
-//		});
-		
-		shareButton.setOnClickListener(new View.OnClickListener() {
+		slideButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				handleShareButtonClicked();
+				handleSlideButtonClicked();
 			}
 		});
 	}
 	
-	public void handleShareButtonClicked(){
+	public void handleSlideButtonClicked(){
 		
 		switch(RideType){
 		case OFFER:
-			if(TextUtils.isEmpty(mRide.getRideId())){
-				postRideDetails();
-			} else{
-				CommonUtil.getSharedInstance().shareMessage(mRide.getRideId(), MapActivity.this);
+			switch(currentSlideButtonState){
+				case SHARE:
+					CommonUtil.getSharedInstance().shareMessage(mRide.getRideId(), MapActivity.this);
+					break;
+				case DONE:
+					postRideDetails();
+					break;
+				default:
+					int i = 1/0;
 			}
 			break;
 		
@@ -332,6 +297,7 @@ public class MapActivity extends BaseMapActivity{
 					JSONObject jsonResponse = new JSONObject(response);
 					boolean success = jsonResponse.getBoolean("success");
 					if(success){
+						setSlideButton(SlideButtonState.REQUESTED);
 						Toast.makeText(getApplicationContext(), getString(R.string.request_success), Toast.LENGTH_LONG).show();
 					} else {
 						Toast.makeText(getApplicationContext(), getString(R.string.request_error), Toast.LENGTH_LONG).show();
@@ -344,12 +310,12 @@ public class MapActivity extends BaseMapActivity{
 		});
 	}
 	public void postRideDetails(){
+		boolean newRide = true;
 		final ProgressDialog progress = ProgressDialog.show(this, getString(R.string.server_request_dialog_title),
 			    getString(R.string.server_request_dialog_title), true);
 		HttpDataListener mDataListener = new HttpDataListener() {				
 			@Override
 			public void onError(Exception e) {			
-				//Toast.makeText(getApplicationContext(), "Something went wrong. Please try after some time", Toast.LENGTH_LONG).show();
 				Log.e(TAG , e.getLocalizedMessage());
 				progress.dismiss();
 				Toast.makeText(getApplicationContext(), getString(R.string.internet_error), Toast.LENGTH_LONG).show();
@@ -364,7 +330,7 @@ public class MapActivity extends BaseMapActivity{
 						if(success){
 							String ride_id = jsonResponse.getString("ride_id");
 							mRide.setRideId(ride_id);
-							CommonUtil.getSharedInstance().shareMessage(ride_id, MapActivity.this);
+							setSlideButton(SlideButtonState.SHARE);
 						} else {
 							Toast.makeText(getApplicationContext(), getString(R.string.server_error), Toast.LENGTH_LONG).show();
 						}
@@ -373,8 +339,15 @@ public class MapActivity extends BaseMapActivity{
 				}
 			}
 		};
+		Log.d("rideid", mRide.getRideId());
+		if(TextUtils.isEmpty(mRide.getRideId())){
+			newRide = true;
+			Httphandler.getSharedInstance().postNewRide((OfferRide)mRide, mDataListener);
+		} else {
+			newRide = false;
+			Httphandler.getSharedInstance().updateRide((OfferRide)mRide, mDataListener);
+		}
 		
-		Httphandler.getSharedInstance().postNewRide((OfferRide)mRide, mDataListener);
 	}
 	
 	//To-Do handle ride not present case
@@ -412,6 +385,7 @@ public class MapActivity extends BaseMapActivity{
 					} else {
 						mRide = OfferRide.fromString(response);
 						mRide.setUserUserId(User.getSharedInstance().getUserId());
+						fetchUserData();
 						setViews();
 						doInitialMapSetUps();
 						refreshRoute();
@@ -427,5 +401,63 @@ public class MapActivity extends BaseMapActivity{
 	private void refreshRoute(){
 		drawRoute(mRide.getSource(), mRide.getDestination(), mRide.getWayPoints());
 		refreshMapBoundary();
+	}
+	
+	private void fetchUserData(){
+		
+        HttpDataListener dataListener = new HttpDataListener(){
+				
+				@Override
+				public void onError(Exception e) {
+					e.printStackTrace();
+					
+				}
+				
+				@Override
+				public void onDataAvailable(String response) {		
+					muser = User.fromString(response);
+					
+					for(OfferRide tempRide : muser.getAcceptedRides()){
+						if(mRide.getRideId().equals(tempRide.getRideId())){
+							setSlideButton(SlideButtonState.ACCEPTED);
+						}
+					}
+					for(OfferRide tempRide : muser.getRequestedRides()){
+						if(mRide.getRideId().equals(tempRide.getRideId())){
+							setSlideButton(SlideButtonState.REQUESTED);
+						}
+					}
+				}
+			};
+			
+		Httphandler.getSharedInstance().getUser(User.getSharedInstance().getUserId(), dataListener);
+
+	}
+	
+	private void setSlideButton(SlideButtonState state){
+		currentSlideButtonState = state;
+		switch(state){
+			case REQUEST:
+				slideButton.setText("REQUEST");
+				break;			
+			case REQUESTED:
+				slideButton.setText("REQUESTED");
+				slideButton.setClickable(false);
+				slideButton.setBackgroundDrawable(null);
+				break;
+			case ACCEPTED:
+				slideButton.setText("ACCEPTED");
+				slideButton.setClickable(false);
+				slideButton.setBackgroundDrawable(null);
+				break;
+			case DONE:
+				slideButton.setText("DONE");
+				slideButton.setBackgroundColor(0xFFFFBB33);
+				break;
+			case SHARE:
+				slideButton.setText("SHARE");
+				slideButton.setBackgroundColor(0xFF99CC00);
+				break;
+		}
 	}
 }

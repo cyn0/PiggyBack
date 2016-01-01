@@ -16,6 +16,11 @@ import com.example.utils.Constants;
 
 public class User {
 
+	public enum UserType {
+		OFFERER,
+		REQUESTER
+	}
+	
 	public static User mSharedInstance = new User();
 	
 	final String USER_ID = "user_id";

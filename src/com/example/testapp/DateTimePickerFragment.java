@@ -11,6 +11,8 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
+
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
@@ -20,6 +22,8 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +35,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 public class DateTimePickerFragment extends Fragment {
     // Store instance variables
@@ -48,7 +53,7 @@ public class DateTimePickerFragment extends Fragment {
     Place source, destination;
     
     OfferRide mOfferRide;
-    
+    Activity mActivity;
     // newInstance constructor for creating fragment with arguments
     public static DateTimePickerFragment newInstance(int page, String title) {
     	DateTimePickerFragment fragmentFirst = new DateTimePickerFragment();
@@ -67,7 +72,7 @@ public class DateTimePickerFragment extends Fragment {
         title = getArguments().getString("someTitle");
         
         mOfferRide = (OfferRide)getArguments().getParcelable(Constants.OFFER_RIDE_OBJECT);
-        
+        mActivity = getActivity();
     }
     
     // Inflate the view for the fragment based on layout XML
@@ -82,18 +87,26 @@ public class DateTimePickerFragment extends Fragment {
         done = (Button) view.findViewById(R.id.next);
         chargeCheckBox = (CheckBox) view.findViewById(R.id.chargeCheckbox);
         chargeEditText = (EditText) view.findViewById(R.id.chargeEditText);
-        
+        Log.d("rideid dtp", mOfferRide.getRideId());
         
         long time = System.currentTimeMillis();
-        mOfferRide.setStartDate(time);
-        mOfferRide.setStartTime(time);
+        if(mOfferRide.getStartDate() == 0){
+        	mOfferRide.setStartDate(time);
+        }
+        if(mOfferRide.getStartTime() == 0){
+        	mOfferRide.setStartTime(time);
+        }
+        if(mOfferRide.getReturnTime() == 0){
+        	mOfferRide.setReturnTime(time);
+        }
         
-        setStartTimeEditText.setText(TimeHelper.TimeToString(time));
-        setStartDateEditText.setText(TimeHelper.DateToString(time));
-
+        setStartDateEditText.setText(TimeHelper.DateToString(mOfferRide.getStartDate()));
+        setStartTimeEditText.setText(TimeHelper.TimeToString(mOfferRide.getStartTime()));
+        setReturnTimeEditText.setText(TimeHelper.TimeToString(mOfferRide.getReturnTime()));
         
         if(mOfferRide.isPriced()){
 			chargeEditText.setVisibility(View.VISIBLE);
+			chargeEditText.setText(mOfferRide.getPrice() +"");
 		}else{
 			chargeEditText.setVisibility(View.INVISIBLE);
 		}
@@ -172,9 +185,10 @@ public class DateTimePickerFragment extends Fragment {
 					chargeEditText.setVisibility(View.INVISIBLE);
 					mOfferRide.setPrice(0);
 					mOfferRide.setPriced(false);
-				}else{
+				} else {
 					chargeEditText.setVisibility(View.VISIBLE);
 					mOfferRide.setPriced(true);
+					chargeEditText.setText(mOfferRide.getPrice()+"");
 				}
 			}
        	});
@@ -182,41 +196,36 @@ public class DateTimePickerFragment extends Fragment {
         done.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-
-//				if(mOfferRide.getStartDate() == null){
-//	        		Toast.makeText(getActivity(), "Please set trip start date", Toast.LENGTH_LONG).show();
-//	        		return;
-//	        	} else if(mOfferRide.getStartTime() == null){
-//	        		Toast.makeText(getActivity(), "Please set start time for forward journey", Toast.LENGTH_LONG).show();
-//	        		return;
-//	        	} else if(mOfferRide.isRoundTrip() && mOfferRide.getReturnTime() == null){
-//	        		Toast.makeText(getActivity(), "Please set start time for return journey", Toast.LENGTH_LONG).show();
-//	        		return;
-//	        	} else if(mOfferRide.isPriced()){
-//	        		String charge = chargeEditText.getText().toString();
-//			    	if(TextUtils.isEmpty(charge)){
-//			    		Toast.makeText(getActivity(), "Please set price for the trip", Toast.LENGTH_LONG).show();
-//		        		return;
-//			    	}
-//			    	try{
-//			    		double charge1 = Double.parseDouble(charge);
-//			    		if(charge1 <=0){
-//			    			throw new Exception("price less than zero");
-//			    		} else {
-//			    			mOfferRide.setPrice(charge1);
-//			    		}
-//			    	}catch(Exception e){
-//			    		Log.e("exception", e.getLocalizedMessage());
-//			    		Toast.makeText(getActivity(), "Please set valid price for the trip", Toast.LENGTH_LONG).show();
-//			    		return;
-//			    	}
-//			    	
-//	        	} 
-//	        	
+				if(mOfferRide.isPriced()){
+	        		String charge = chargeEditText.getText().toString();
+			    	if(TextUtils.isEmpty(charge)){
+			    		Toast.makeText(getActivity(), "Please set price for the trip", Toast.LENGTH_LONG).show();
+		        		return;
+			    	}
+			    	try{
+			    		double charge1 = Double.parseDouble(charge);
+			    		if(charge1 <=0){
+			    			throw new Exception("price less than zero");
+			    		} else {
+			    			mOfferRide.setPrice(charge1);
+			    		}
+			    	}catch(Exception e){
+			    		Log.e("exception", e.getLocalizedMessage());
+			    		Toast.makeText(getActivity(), "Please set valid price for the trip", Toast.LENGTH_LONG).show();
+			    		return;
+			    	}
+			    	
+	        	} 
+	        	
+				
 				
 				Intent myIntent = new Intent(getActivity(), MapActivity.class);
 				myIntent.putExtra(Constants.OFFER_RIDE_OBJECT, (Parcelable) mOfferRide);
+				Log.d("rideid dtp", mOfferRide.getRideId());
 				startActivity(myIntent);
+				if(mActivity instanceof MapActivity){
+					mActivity.finish();
+				}
 			}
 		});
         return view;

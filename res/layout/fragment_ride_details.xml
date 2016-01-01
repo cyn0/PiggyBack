@@ -193,18 +193,28 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
          >
-    <!-- 
 	<Button
-        android:id="@+id/next"
+        android:id="@+id/edit"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp"
-        android:background="#33B5E5"
+        android:visibility="gone"
+        android:background="@drawable/border"
         android:layout_marginRight="5dp"
-        android:text="Accept" />
-	-->
+        android:text="Edit" />
+	 <Button
+        android:id="@+id/share"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:visibility="gone"
+        android:background="#99CC00"
+        android:layout_marginRight="5dp"
+        android:text="Share" />
 	 <Button
         android:id="@+id/negative"
         android:layout_width="fill_parent"

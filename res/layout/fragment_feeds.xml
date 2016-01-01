@@ -14,7 +14,46 @@
         android:dividerHeight="1dp"
         android:listSelector="@drawable/list_row_selector" />
  	 -->
- 	 
+ 	 <LinearLayout 
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#33B5E5"
+    android:visibility="gone"
+    android:id="@+id/noItemsLayout">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="5dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_weight="12">
+
+        <ImageView
+            android:id="@+id/instructionImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:src="@drawable/climo_sloth__29841_zoom"/>
+    </LinearLayout>
+    <TextView
+        android:id="@+id/instruction"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textColor="#ffffff"
+        android:paddingLeft="64dp"
+        android:paddingRight="64dp"
+        android:textSize="20sp"
+        />
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="64dp" />
+</LinearLayout>
  	 <ExpandableListView
  	     android:id="@+id/lvExp"
  	     android:layout_width="match_parent"

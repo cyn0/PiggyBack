@@ -16,11 +16,11 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class OfferRide extends Ride{
 
-	private long startDate;
+	private long startDate = 0;
 	
-	private long startTime;
+	private long startTime = 0;
 	
-	private long returnTime;
+	private long returnTime = 0;
 	
 	private double price = 0;
 	
@@ -158,7 +158,6 @@ public class OfferRide extends Ride{
 			JSONObject root = new JSONObject(input);
 			
 //			mOfferRide.setUserId(root.getString(KEY_USER_ID));
-			Log.d("input from fromStrinf", input);
 			mOfferRide.setOfferedUserId(root.getString(KEY_OFFERED_USER_ID));
 			mOfferRide.setUserUserId(root.getString(KEY_USER_USER_ID));
 			

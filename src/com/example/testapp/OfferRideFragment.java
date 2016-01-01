@@ -25,6 +25,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -48,7 +49,6 @@ public class OfferRideFragment extends Fragment {
     
     ImageButton chooseSource;
 	ImageButton chooseDestination;
-	Button done;
     AutoCompleteTextView sourceTextView, destinationTextView;
     
     Place source, destination;
@@ -71,7 +71,12 @@ public class OfferRideFragment extends Fragment {
         page = getArguments().getInt("someInt", 0);
         title = getArguments().getString("someTitle");
         mActivity = getActivity();
-        mOfferRide = new OfferRide();
+        
+        mOfferRide = (OfferRide)getArguments().getParcelable(Constants.OFFER_RIDE_OBJECT);
+        if(mOfferRide == null){
+        	mOfferRide = new OfferRide();
+        }
+        Log.d("rideid orf", mOfferRide.getRideId());
         mOfferRide.setOfferedUserId(User.getSharedInstance().getUserId());
     }
     
@@ -84,7 +89,8 @@ public class OfferRideFragment extends Fragment {
         final Spinner tripType = (Spinner)view.findViewById(R.id.trip_type_spinner);
         CheckBox roundTripCheckBox = (CheckBox) view.findViewById(R.id.roundTripCheckbox);
         
-        done = (Button) view.findViewById(R.id.next);
+        sourceTextView.setText(mOfferRide.getSourceAddress());
+        destinationTextView.setText(mOfferRide.getDestinationAddress());
         
         sourceTextView.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -153,6 +159,11 @@ public class OfferRideFragment extends Fragment {
         ArrayAdapter<CharSequence> tripTypeAdapter = ArrayAdapter.createFromResource(getActivity(),R.array.trip_types, android.R.layout.simple_spinner_item);
         tripTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         tripType.setAdapter(tripTypeAdapter);
+        if(mOfferRide.isRecurring()){
+        	tripType.setSelection(0);
+        } else {
+        	tripType.setSelection(1);
+        }
         
         roundTripCheckBox.setChecked(mOfferRide.isRoundTrip());
         roundTripCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -167,7 +178,7 @@ public class OfferRideFragment extends Fragment {
 			}
        	});
         
-        done.setOnClickListener(new View.OnClickListener() {
+        ((Button) view.findViewById(R.id.next)).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if( mOfferRide.getSource() == null) {
@@ -197,24 +208,6 @@ public class OfferRideFragment extends Fragment {
 		        fragmentTransaction.addToBackStack(null);
 		        fragmentTransaction.commit();
 		        
-//				IMapMarker tempSource = new IMapMarker(source.getLatLng(), "Friend name", source.getAddress().toString());
-//				IMapMarker tempDestination = new IMapMarker(destination.getLatLng(), "Friend name", destination.getAddress().toString());
-//				Ride r = new Ride(tempSource, tempDestination, true);
-//			
-//				Intent myIntent = new Intent(getActivity(), MapActivity.class);
-//				myIntent.putExtra("type", Ride.TYPE_OFFER);
-//				//myIntent.putExtra("ride", r);
-//				//To-do find better way to pass these params
-////				myIntent.putExtra("source_latlng", source.getLatLng()); 
-////				myIntent.putExtra("source_name", source.getName()); 
-////				myIntent.putExtra("source_address", source.getAddress()); 
-////				myIntent.putExtra("destination_latlng", destination.getLatLng()); 
-////				myIntent.putExtra("destination_name", destination.getName());
-////				myIntent.putExtra("destination_address", destination.getAddress());
-//				
-//				DummyCurrentRide.currentRide = r;
-//				DummyRides.addRide(r);
-//				startActivity(myIntent);
 			}
 		});
         /*LatLngBounds BOUNDS_MOUNTAIN_VIEW = new LatLngBounds(
@@ -236,12 +229,6 @@ public class OfferRideFragment extends Fragment {
         
     }
 }; 
-        mAutocompleteTextView.setOnItemClickListener(mAutocompleteClickListener);
-        mAutocompleteTextView.setThreshold(3);
-        mPlaceArrayAdapter = new PlaceArrayAdapter(getActivity(), android.R.layout.simple_list_item_1,
-                BOUNDS_MOUNTAIN_VIEW, null);
-        mAutocompleteTextView.setAdapter(mPlaceArrayAdapter);
-        Button dateButton = (Button) view.findViewById(R.id.button1);
         dateButton.setOnClickListener(new View.OnClickListener() {
 			
 			@Override

@@ -201,7 +201,7 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
                  if(ride.isRecurring()){
                  	titleString += " starting from ";
                  } else {
-                 	titleString += " is on";
+                 	titleString += " is on ";
                  }
                  titleString += TimeHelper.DateToString(ride.getStartDate());
                  
@@ -214,12 +214,25 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 //                 Address sourceAddress = CommonUtil.getSharedInstance().getAddress(mActivity, ride.getSource()); 
 //                 Address destinationAddress = CommonUtil.getSharedInstance().getAddress(mActivity, ride.getDestination());
                  
-                 String placeString = "Chennai .. Madurai";
+                 String placeString = "";
                  
+
 //                 if(sourceAddress != null && destinationAddress != null){
 //                 	placeString = sourceAddress.getLocality() + " .. " + destinationAddress.getLocality();
 //                 }
-                 
+                 String sourceAddress = ride.getSourceAddress();
+                 String destinationAddress = ride.getDestinationAddress();
+                 if(sourceAddress.contains(",")){
+                	 placeString = ride.getSourceAddress().split(",")[0];
+                 } else {
+                	 placeString = ride.getSourceAddress();
+                 }
+                 placeString = placeString + " .. ";
+                 if(destinationAddress.contains(",")){
+                	 placeString += destinationAddress.split(",")[0];
+                 } else {
+                	 placeString += destinationAddress;
+                 }
                  holder.titleString = titleString;
                  holder.timeString = time;
                  holder.placeString = placeString;
@@ -331,7 +344,7 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 								fragmentManager
 									.beginTransaction()
 									.replace(R.id.container,
-										RideDetailsFragment.newInstance(2, "Ride details", ride.getRideId(), ride))
+										RideDetailsFragment.newInstance(2, "Ride details", ride.getRideId(), ride, null))
 									.addToBackStack(null)
 									.commit();
 								break;

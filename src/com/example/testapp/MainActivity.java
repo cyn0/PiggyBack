@@ -98,13 +98,13 @@ public class MainActivity extends ActionBarActivity implements
 	public void onNavigationDrawerItemSelected(int position) {
 		// update the main content by replacing fragments
 		FragmentManager fragmentManager = getSupportFragmentManager();
+		fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 		switch(position){
 			case 0:
 				fragmentManager
 					.beginTransaction()
 					.replace(R.id.container,
 							FeedsFragment.newInstance(1, "My rides"))
-					.addToBackStack(null)
 					.commit();
 				break;
 			

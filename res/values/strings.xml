@@ -27,10 +27,12 @@
     <string name="reject_error">Something went wrong, please try after sometime. Is connected to internet?</string>
     <string name="delete_success">Ride successfully deleted</string>
     <string name="delete_error">Something went wrong in deleting the ride. Try after sometime.</string>
-    <string name="feeds_error">Unable to fetch feeds. Something went wrong, please try after sometime. Is connected to internet?</string>
+    <string name="cancel_success">Ride request cancelled</string>
+    <string name="cancel_error">Something went wrong while cancelling the ride. Try after sometime.</string>
+    <string name="feeds_error">Unable to fetch your feeds. Is connected to internet?</string>
     <string name="app_intro">GETTING STARTED</string>
-    <string name="ride_not_found">Ride you requested is removed</string>
-    
+    <string name="ride_not_found">Ride you requested is not valid or removed</string>
+    <string name="instruction_no_ride">You haven\'t offered or accepted any ride yet. Spread the love...</string>
     <string name="skip_button">SKIP</string>
     <string name="done_button">DONE</string>
     

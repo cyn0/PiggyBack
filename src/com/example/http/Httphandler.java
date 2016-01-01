@@ -32,6 +32,7 @@ public class Httphandler {
     private final String POST_REQUEST_RIDE = "/ride/request";
     private final String POST_DECLINE_RIDE = "/ride/decline";
     private final String POST_REGISTER = "/register";
+    private final String POST_CANCEL_REQUEST = "/ride/revertRequest";
     
 	private String TAG = "Http error";
 	private HttpDataListener mHttpDataListener;
@@ -70,8 +71,20 @@ public class Httphandler {
         new AsyncHttpTask().execute(url, "DELETE");
     }
     
+    public void updateRide(OfferRide mOfferRide, HttpDataListener dataListener){
+        final String url = SERVER_BASE_URL + GET_RIDE + mOfferRide.getRideId()  + "/update";
+        this.mHttpDataListener = dataListener;
+        new AsyncHttpTask().execute(url, "POST",  mOfferRide.toJSON().toString());
+    }
+    
     public void requestRide(OfferRide mRide, HttpDataListener dataListener){
         final String url = SERVER_BASE_URL + POST_REQUEST_RIDE;
+        this.mHttpDataListener = dataListener;
+        new AsyncHttpTask().execute(url, "POST", mRide.toJSON().toString());
+    }
+    
+    public void cancelRequest(OfferRide mRide, HttpDataListener dataListener){
+        final String url = SERVER_BASE_URL + POST_CANCEL_REQUEST;
         this.mHttpDataListener = dataListener;
         new AsyncHttpTask().execute(url, "POST", mRide.toJSON().toString());
     }
@@ -142,7 +155,7 @@ public class Httphandler {
                 }
                 
 			} catch (Exception e) {
-				Log.d(TAG, e.getLocalizedMessage());
+				e.printStackTrace();
 			}
 			return result;
 		}
