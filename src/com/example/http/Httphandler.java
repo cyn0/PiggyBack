@@ -35,7 +35,6 @@ public class Httphandler {
     private final String POST_CANCEL_REQUEST = "/ride/revertRequest";
     
 	private String TAG = "Http error";
-	private HttpDataListener mHttpDataListener;
 	private static Httphandler mInstance;
 	
 	public interface HttpDataListener{
@@ -54,69 +53,63 @@ public class Httphandler {
 
 	public void getRide(String ride_id, HttpDataListener dataListener){
 		final String url = SERVER_BASE_URL + GET_RIDE + ride_id;
-		this.mHttpDataListener = dataListener;
-		new AsyncHttpTask().execute(url, "GET");
+		new AsyncHttpTask(dataListener).execute(url, "GET");
 	}
 
     
     public void postNewRide(OfferRide mOfferRide, HttpDataListener dataListener){
         final String url = SERVER_BASE_URL + POST_OFFERED_RIDE;
-        this.mHttpDataListener = dataListener;
-        new AsyncHttpTask().execute(url, "POST", mOfferRide.toJSON().toString());
+        new AsyncHttpTask(dataListener).execute(url, "POST", mOfferRide.toJSON().toString());
     }
     
     public void deleteRide(OfferRide mOfferRide, HttpDataListener dataListener){
         final String url = SERVER_BASE_URL + GET_USER + mOfferRide.getOfferedUserId()  + GET_RIDE  + mOfferRide.getRideId();
-        this.mHttpDataListener = dataListener;
-        new AsyncHttpTask().execute(url, "DELETE");
+        new AsyncHttpTask(dataListener).execute(url, "DELETE");
     }
     
     public void updateRide(OfferRide mOfferRide, HttpDataListener dataListener){
         final String url = SERVER_BASE_URL + GET_RIDE + mOfferRide.getRideId()  + "/update";
-        this.mHttpDataListener = dataListener;
-        new AsyncHttpTask().execute(url, "POST",  mOfferRide.toJSON().toString());
+        new AsyncHttpTask(dataListener).execute(url, "POST",  mOfferRide.toJSON().toString());
     }
     
     public void requestRide(OfferRide mRide, HttpDataListener dataListener){
         final String url = SERVER_BASE_URL + POST_REQUEST_RIDE;
-        this.mHttpDataListener = dataListener;
-        new AsyncHttpTask().execute(url, "POST", mRide.toJSON().toString());
+        new AsyncHttpTask(dataListener).execute(url, "POST", mRide.toJSON().toString());
     }
     
     public void cancelRequest(OfferRide mRide, HttpDataListener dataListener){
         final String url = SERVER_BASE_URL + POST_CANCEL_REQUEST;
-        this.mHttpDataListener = dataListener;
-        new AsyncHttpTask().execute(url, "POST", mRide.toJSON().toString());
+        new AsyncHttpTask(dataListener).execute(url, "POST", mRide.toJSON().toString());
     }
     
     public void declineRide(OfferRide mRide, HttpDataListener dataListener){
         final String url = SERVER_BASE_URL + POST_DECLINE_RIDE;
-        this.mHttpDataListener = dataListener;
-        new AsyncHttpTask().execute(url, "POST", mRide.toJSON().toString());
+        new AsyncHttpTask(dataListener).execute(url, "POST", mRide.toJSON().toString());
     }
     
     public void acceptRide(OfferRide mRide, HttpDataListener dataListener){
         final String url = SERVER_BASE_URL + POST_ACCEPT_RIDE;
-        this.mHttpDataListener = dataListener;
-        new AsyncHttpTask().execute(url, "POST", mRide.toJSON().toString());
+        new AsyncHttpTask(dataListener).execute(url, "POST", mRide.toJSON().toString());
     }
     
     public void register(HttpDataListener dataListener){
     	final String url = SERVER_BASE_URL + POST_REGISTER;
-    	this.mHttpDataListener = dataListener;
-    	new AsyncHttpTask().execute(url, "POST", User.getSharedInstance().toString());
+    	new AsyncHttpTask(dataListener).execute(url, "POST", User.getSharedInstance().toString());
     }
 
     public void getUser(String user_id, HttpDataListener dataListener){
 		final String url = SERVER_BASE_URL + GET_USER + user_id;
-		this.mHttpDataListener = dataListener;
-		new AsyncHttpTask().execute(url, "GET");
+		new AsyncHttpTask(dataListener).execute(url, "GET");
 	}
     
 	public class AsyncHttpTask extends AsyncTask<String, Void, Integer> {
 
 		String response;
-
+		HttpDataListener dataListener;
+		public AsyncHttpTask(HttpDataListener dataListener){
+			this.dataListener = dataListener;
+		}
+		
 		@Override
 		protected Integer doInBackground(String... params) {
 			InputStream inputStream = null;
@@ -152,6 +145,8 @@ public class Httphandler {
                     Log.d("response", response);
                     
                     result = 1; 
+                } else {
+                	Log.e(TAG, "Response code not ok");
                 }
                 
 			} catch (Exception e) {
@@ -163,9 +158,9 @@ public class Httphandler {
 		@Override
 		protected void onPostExecute(Integer result) {
 			if(result == 1){
-				mHttpDataListener.onDataAvailable(response);
+				dataListener.onDataAvailable(response);
 			} else {
-				mHttpDataListener.onError(new Exception("Status code not OK."));
+				dataListener.onError(new Exception("Status code not OK."));
 			}
 		}
 	}

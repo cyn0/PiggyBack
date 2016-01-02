@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.example.datamodel.GcmMessage;
+import com.example.datamodel.Message;
 import com.example.utils.Constants;
 import com.example.utils.Notification;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -30,9 +30,11 @@ public class GCMNotificationIntentService extends IntentService {
 
 		if (!extras.isEmpty()) {
 			if (GoogleCloudMessaging.MESSAGE_TYPE_SEND_ERROR.equals(messageType)) {
-				Notification.sendNotification("Notification","Send error: " + extras.toString(), this, 1);
+//				Notification.sendNotification("Notification","Send error: " + extras.toString(), this, 1);
+				Log.e(TAG, "send error: " + extras.toString());
 			} else if (GoogleCloudMessaging.MESSAGE_TYPE_DELETED.equals(messageType)) {
-				Notification.sendNotification("Notification","Deleted messages on server: "	+ extras.toString(), this, 1);
+//				Notification.sendNotification("Notification","Deleted messages on server: "	+ extras.toString(), this, 1);
+				Log.e(TAG, "Deleted messaged on server");
 			} else if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
 				handleGCMMessage(extras);
 				Log.d(TAG, "Received: " + extras.toString());
@@ -45,14 +47,16 @@ public class GCMNotificationIntentService extends IntentService {
 	
 	 
 	private void handleGCMMessage(Bundle extras){
-		GcmMessage gcmMessage = GcmMessage.parseGcmMessage(extras);
+		Message gcmMessage = Message.parseGcmMessage(extras);
+		Log.d("immediately after parsing", gcmMessage.toString());
 //		if(getNotification)
-		Notification.sendNotification(gcmMessage.getTitle(), gcmMessage.getMessage(), this, NOTIFICATION_ID);
 		
-		Intent intent = new Intent(Constants.UPDATE_LIST_VIEW);
-	    intent.putExtra(Constants.GCM_MSG_OBJECT, gcmMessage);
-	    //send broadcast
-	    sendBroadcast(intent);
+		Notification.sendNotification(gcmMessage, this, NOTIFICATION_ID);
+		
+//		Intent intent = new Intent(Constants.UPDATE_LIST_VIEW);
+//	    intent.putExtra(Constants.GCM_MSG_OBJECT, gcmMessage);
+//	    //send broadcast
+//	    sendBroadcast(intent);
 	}
 	
 	

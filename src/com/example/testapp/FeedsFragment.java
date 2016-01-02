@@ -1,55 +1,34 @@
 package com.example.testapp;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.example.autocomplete.MyAutoComplete;
 import com.example.autocomplete.PlaceArrayAdapter;
-import com.example.autocomplete.MyAutoComplete.AutoCompleteListener;
-import com.example.autocomplete.PlaceArrayAdapter.PlaceAutocomplete;
-import com.example.datamodel.GcmMessage;
+import com.example.datamodel.AnotherUser;
 import com.example.datamodel.OfferRide;
 import com.example.datamodel.User;
 import com.example.feeds.CustomExpandableListAdapter;
-import com.example.feeds.CustomListAdapter;
 import com.example.http.Httphandler;
 import com.example.http.Httphandler.HttpDataListener;
-import com.example.utils.Constants;
 import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.PlaceBuffer;
-import com.google.android.gms.location.places.ui.PlacePicker;
 
 public class FeedsFragment extends Fragment {
     // Store instance variables
@@ -130,6 +109,23 @@ public class FeedsFragment extends Fragment {
 			}
 		});
         
+        expListView.setOnChildClickListener(new OnChildClickListener() {
+			
+			@Override
+			public boolean onChildClick(ExpandableListView parent, View v,
+					int groupPosition, int childPosition, long id) {
+				AnotherUser user = (AnotherUser)adapter.getChild(groupPosition, childPosition);
+				OfferRide ride = listItems.get(groupPosition);
+				FragmentManager fragmentManager = ((FragmentActivity)mActivity).getSupportFragmentManager();
+				fragmentManager
+					.beginTransaction()
+					.replace(R.id.container,
+						UserDetailFragment.newInstance(2, "Ride details", null, user, ride))
+					.addToBackStack(null)
+					.commit();
+				return true;
+			}
+		});
         ((FrameLayout) view.findViewById(R.id.barker)).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -163,14 +159,14 @@ public class FeedsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        mActivity.registerReceiver(mMessageReceiver, new IntentFilter(Constants.UPDATE_LIST_VIEW));
+//        mActivity.registerReceiver(mMessageReceiver, new IntentFilter(Constants.UPDATE_LIST_VIEW));
     }
 
     //Must unregister onPause()
     @Override
 	public void onPause() {
         super.onPause();
-        mActivity.unregisterReceiver(mMessageReceiver);
+//        mActivity.unregisterReceiver(mMessageReceiver);
     }
     
     public void fetchFeeds(){
@@ -240,15 +236,15 @@ public class FeedsFragment extends Fragment {
 		Httphandler.getSharedInstance().getUser(User.getSharedInstance().getUserId(), dataListener);
     }
     
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            GcmMessage gcmMessage = intent.getExtras().getParcelable(Constants.GCM_MSG_OBJECT);
-            Toast.makeText(context, gcmMessage.getTitle() + gcmMessage.getRideId(), Toast.LENGTH_LONG).show();
-            fetchFeeds();
-        }
-    };
+//    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//
+//            GcmMessage gcmMessage = intent.getExtras().getParcelable(Constants.GCM_MSG_OBJECT);
+//            Toast.makeText(context, gcmMessage.getTitle(), Toast.LENGTH_LONG).show();
+//            fetchFeeds();
+//        }
+//    };
     
     public void openNewRideFragment(){
     	getFragmentManager()

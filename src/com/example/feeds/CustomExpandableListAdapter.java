@@ -222,21 +222,32 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 //                 }
                  String sourceAddress = ride.getSourceAddress();
                  String destinationAddress = ride.getDestinationAddress();
-                 if(sourceAddress.contains(",")){
-                	 placeString = ride.getSourceAddress().split(",")[0];
-                 } else {
-                	 placeString = ride.getSourceAddress();
+                 if(sourceAddress != null && destinationAddress != null){
+	                 if(sourceAddress.contains(",")){
+	                	 placeString = ride.getSourceAddress().split(",")[0];
+	                 } else {
+	                	 placeString = ride.getSourceAddress();
+	                 }
+	                 placeString = placeString + " .. ";
+	                 if(destinationAddress.contains(",")){
+	                	 placeString += destinationAddress.split(",")[0];
+	                 } else {
+	                	 placeString += destinationAddress;
+	                 }
                  }
-                 placeString = placeString + " .. ";
-                 if(destinationAddress.contains(",")){
-                	 placeString += destinationAddress.split(",")[0];
-                 } else {
-                	 placeString += destinationAddress;
+                 String text = "";
+                 int acceptedSize = ride.getAcceptedUsers().size();
+                 int requestedSize = ride.getRequestedUsers().size();
+                 if(requestedSize > 0){
+                	 text = "Request:1 ";
+                 }
+                 if(acceptedSize > 0){
+                	 text = text + "Accepted:1";
                  }
                  holder.titleString = titleString;
                  holder.timeString = time;
                  holder.placeString = placeString;
-                 holder.yearString = "year";
+                 holder.yearString = text;
                  break;
             case TYPE_SEPARATOR:
             	convertView = inflater.inflate(R.layout.separator_row, null);
@@ -254,19 +265,9 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
         	 holder.title.setText(holder.titleString);
              holder.time.setText(holder.timeString);
              holder.place.setText(holder.placeString);
-             String text = "";
-             int acceptedSize = ride.getAcceptedUsers().size();
-             int requestedSize = ride.getRequestedUsers().size();
-             if(requestedSize > 0){
-            	 text = "Request:1 ";
-             }
-             if(acceptedSize > 0){
-            	 text = text + "Accepted:1";
-             }
-             holder.year.setText(text);
+             holder.year.setText(holder.yearString);
              holder.option.setImageResource(R.drawable.ic_drawer);
              holder.option.setOnClickListener(new OnClickListener() {
-				
 				@Override
 				public void onClick(View v) {
 					handleOptionImageClicked(ride);

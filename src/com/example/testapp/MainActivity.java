@@ -1,35 +1,23 @@
 package com.example.testapp;
 
-import java.util.List;
-
+import com.example.datamodel.Message;
 import com.example.datamodel.User;
 import com.example.http.Httphandler;
 import com.example.utils.Constants;
-import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState;
-
-import android.app.Activity;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
 import android.support.v4.widget.DrawerLayout;
-import android.text.TextUtils;
 
 public class MainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -69,29 +57,39 @@ public class MainActivity extends ActionBarActivity implements
 		
 		final Intent intent = getIntent();
 	    final Bundle extras = intent.getExtras();
-
+	    Log.d("MainActivity", "going insude");
 	    if(extras != null){
-		    String screenName = (String) extras.get(Constants.PAGE);
-		    if(screenName != null && screenName.equals(OfferRideFragment.class.getName())){
-		    	FragmentManager fragmentManager = getSupportFragmentManager();
-	            fragmentManager
-	            	.beginTransaction()
-	            	.replace(R.id.container,
-	            			OfferRideFragment.newInstance(2, "Offer a ride")).commit();
-		    }
-	    }
-//	    if (Intent.ACTION_VIEW.equals(action)) {
-//	    	//You will probably want to use intent.getDataString() rather than getData() if you care about the full URL including the querystring.
-//	        final List<String> segments = intent.getData().getPathSegments();
-//	        if (segments.size() > 0) {
-//	        	String ride_id = segments.get(0);
-//	            FragmentManager fragmentManager = getSupportFragmentManager();
+//		    String screenName = (String) extras.get(Constants.PAGE);
+		    Log.d("MainActivity", "going insude");
+		    Log.d("MainActivity", "going insude"+extras.toString());
+		    
+		    boolean cameFromNotification = extras.getBoolean(Constants.NOTIFICATION, false);
+		    Log.d("MainActivity", "going insude" + cameFromNotification);
+//		    if(screenName != null && screenName.equals(OfferRideFragment.class.getName())){
+//		    	FragmentManager fragmentManager = getSupportFragmentManager();
 //	            fragmentManager
 //	            	.beginTransaction()
 //	            	.replace(R.id.container,
-//	            			RideDetailsFragment.newInstance(2, "Offer a ride", ride_id)).commit();
-//	        }
-//	    }
+//	            			OfferRideFragment.newInstance(2, "Offer a ride")).commit();
+//		    } else
+		    	if(cameFromNotification) {
+		    		
+		    	Message gcmMessage1 = (Message)intent.getSerializableExtra(Constants.SOME_NAME_FOR_GCM_OBJECT);
+		    	intent.replaceExtras((Bundle)null);
+		    	Log.d("MainActivity", gcmMessage1.toString());
+		    	Fragment fragment = UserDetailFragment.newInstance(2, "User details", gcmMessage1, null, null);
+			 	
+		        
+			 	FragmentManager fragmentManager = getSupportFragmentManager();
+		        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+		        fragmentTransaction.replace(R.id.container, fragment);
+		        fragmentTransaction.addToBackStack(null);
+		        fragmentTransaction.commit();
+		    	
+		    }
+	    }
+	    
+	    
 	}
 
 	@Override
@@ -177,42 +175,42 @@ public class MainActivity extends ActionBarActivity implements
 	/**
 	 * A placeholder fragment containing a simple view.
 	 */
-	public static class PlaceholderFragment extends Fragment {
-		/**
-		 * The fragment argument representing the section number for this
-		 * fragment.
-		 */
-		private static final String ARG_SECTION_NUMBER = "section_number";
-
-		/**
-		 * Returns a new instance of this fragment for the given section number.
-		 */
-		public static PlaceholderFragment newInstance(int sectionNumber) {
-			PlaceholderFragment fragment = new PlaceholderFragment();
-			Bundle args = new Bundle();
-			args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-			fragment.setArguments(args);
-			return fragment;
-		}
-
-		public PlaceholderFragment() {
-		}
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_main, container,
-					false);
-			return rootView;
-		}
-
-		@Override
-		public void onAttach(Activity activity) {
-			super.onAttach(activity);
-			((MainActivity) activity).onSectionAttached(getArguments().getInt(
-					ARG_SECTION_NUMBER));
-		}
-	}
+//	public static class PlaceholderFragment extends Fragment {
+//		/**
+//		 * The fragment argument representing the section number for this
+//		 * fragment.
+//		 */
+//		private static final String ARG_SECTION_NUMBER = "section_number";
+//
+//		/**
+//		 * Returns a new instance of this fragment for the given section number.
+//		 */
+//		public static PlaceholderFragment newInstance(int sectionNumber) {
+//			PlaceholderFragment fragment = new PlaceholderFragment();
+//			Bundle args = new Bundle();
+//			args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+//			fragment.setArguments(args);
+//			return fragment;
+//		}
+//
+//		public PlaceholderFragment() {
+//		}
+//
+//		@Override
+//		public View onCreateView(LayoutInflater inflater, ViewGroup container,
+//				Bundle savedInstanceState) {
+//			View rootView = inflater.inflate(R.layout.fragment_main, container,
+//					false);
+//			return rootView;
+//		}
+//
+//		@Override
+//		public void onAttach(Activity activity) {
+//			super.onAttach(activity);
+//			((MainActivity) activity).onSectionAttached(getArguments().getInt(
+//					ARG_SECTION_NUMBER));
+//		}
+//	}
 	
 	public void startApplicationComponents(){
 		Httphandler.setSharedInstance(new Httphandler());
