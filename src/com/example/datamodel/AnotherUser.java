@@ -1,5 +1,8 @@
 package com.example.datamodel;
 
+import java.util.ArrayList;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,6 +20,9 @@ public class AnotherUser {
 	private String id;
 	
 	private static String KEY_PHONE_NUMBER = "phone_number";
+	ArrayList<OfferRide> mOfferedRides = new ArrayList<OfferRide>();
+	ArrayList<OfferRide> mAcceptedRides = new ArrayList<OfferRide>();
+	ArrayList<OfferRide> mRequestedRides = new ArrayList<OfferRide>();
 	public String getId() {
 		return id;
 	}
@@ -49,6 +55,30 @@ public class AnotherUser {
 		this.contact_name = contact_name;
 	}
 
+	public void setOfferedRides(ArrayList<OfferRide> rides){
+		this.mOfferedRides = rides;
+	}
+	
+	public void setAcceptedRides(ArrayList<OfferRide> rides){
+		this.mAcceptedRides = rides;
+	}
+	
+	public void setRequestedRides(ArrayList<OfferRide> rides){
+		this.mRequestedRides = rides;
+	}
+	
+	public ArrayList<OfferRide> getOfferedRides(){
+		return this.mOfferedRides;
+	}
+	
+	public ArrayList<OfferRide> getAcceptedRides(){
+		return this.mAcceptedRides;
+	}
+	
+	public ArrayList<OfferRide> getRequestedRides(){
+		return this.mRequestedRides;
+	}
+	
 	public static AnotherUser fromString(String input){
 		AnotherUser user = new AnotherUser();
 		try{
@@ -57,6 +87,28 @@ public class AnotherUser {
 			user.setPhone_number(root.getString(KEY_PHONE_NUMBER));
 			String name = CommonUtil.getSharedInstance().getContactName(user.getPhone_number());
 			user.setContact_name(name);
+			
+			if(!root.isNull(User.KEY_ACCEPTED_RIDES)){
+				JSONArray jsonAcceptedRides = root.getJSONArray(User.KEY_ACCEPTED_RIDES);
+				ArrayList<OfferRide> acceptRides = new ArrayList<OfferRide>();
+				for(int i=0; i<jsonAcceptedRides.length(); i++){
+					JSONObject jsonAcceptRide = jsonAcceptedRides.getJSONObject(i);
+					OfferRide ride = OfferRide.fromString(jsonAcceptRide.toString());
+					acceptRides.add(ride);
+				}
+				user.setAcceptedRides(acceptRides);
+			}
+			
+			if(!root.isNull(User.KEY_REQUESTED_RIDES)){
+				JSONArray jsonRequestedRides = root.getJSONArray(User.KEY_REQUESTED_RIDES);
+				ArrayList<OfferRide> requestRides = new ArrayList<OfferRide>();
+				for(int i=0; i<jsonRequestedRides.length(); i++){
+					JSONObject jsonRequestRide = jsonRequestedRides.getJSONObject(i);
+					OfferRide ride = OfferRide.fromString(jsonRequestRide.toString());
+					requestRides.add(ride);
+				}
+				user.setRequestedRides(requestRides);
+			}
 		} catch(JSONException e){
 			e.printStackTrace();
 		}

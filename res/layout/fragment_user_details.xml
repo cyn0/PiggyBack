@@ -39,6 +39,8 @@
         android:background="#33B5E5"
         android:textColor="#ffffff"
         android:textStyle="bold"
+        android:textSize="@dimen/title"
+        android:gravity="center_vertical"
         android:text="Ride Details" />
 
     <LinearLayout
@@ -105,7 +107,9 @@
         android:layout_marginTop="5dp"
         android:background="#33B5E5"
         android:textColor="#ffffff"
+        android:textSize="@dimen/title"
         android:textStyle="bold"
+        android:gravity="center_vertical"
         android:text="User" />
     
     <LinearLayout
@@ -144,6 +148,7 @@
         android:layout_marginBottom="15dp"
         android:background="#FF4444"
         android:layout_marginRight="5dp"
+        android:visibility="gone"
         android:text="Decline" />
 	</LinearLayout>
     </ScrollView>	

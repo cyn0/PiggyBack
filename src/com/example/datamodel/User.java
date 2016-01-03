@@ -27,9 +27,9 @@ public class User {
 	final String GCM_ID = "gcm_id";
 	final String PHONE_NUM = "phone_number";
 	
-	final static String KEY_OFFERED_RIDES = "offered_rides";
-	final static String KEY_ACCEPTED_RIDES = "accepted_rides";
-	final static String KEY_REQUESTED_RIDES = "requested_rides";
+	final public static String KEY_OFFERED_RIDES = "offered_rides";
+	final public static String KEY_ACCEPTED_RIDES = "accepted_rides";
+	final public static String KEY_REQUESTED_RIDES = "requested_rides";
 	
 	ArrayList<OfferRide> mOfferedRides = new ArrayList<OfferRide>();
 	ArrayList<OfferRide> mAcceptedRides = new ArrayList<OfferRide>();

@@ -53,10 +53,10 @@ public class GCMNotificationIntentService extends IntentService {
 		
 		Notification.sendNotification(gcmMessage, this, NOTIFICATION_ID);
 		
-//		Intent intent = new Intent(Constants.UPDATE_LIST_VIEW);
-//	    intent.putExtra(Constants.GCM_MSG_OBJECT, gcmMessage);
-//	    //send broadcast
-//	    sendBroadcast(intent);
+		Intent intent = new Intent(Constants.UPDATE_LIST_VIEW);
+	    intent.putExtra(Constants.GCM_MSG_OBJECT, gcmMessage);
+	    //send broadcast
+	    sendBroadcast(intent);
 	}
 	
 	

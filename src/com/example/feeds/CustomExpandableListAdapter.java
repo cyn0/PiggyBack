@@ -54,12 +54,6 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
  
     List<OfferRide> rides;
     private TreeSet mSeparatorsSet = new TreeSet();
-//    public CustomExpandableListAdapter(Context context, List<String> listDataHeader,
-//            HashMap<String, List<String>> listChildData) {
-//        this._context = context;
-////        this._listDataHeader = listDataHeader;
-////        this._listDataChild = listChildData;
-//    }
 
     public CustomExpandableListAdapter(Activity activity, ExpandableListView listView, List<OfferRide> acceptedRides) {
         this.mActivity = activity;        
@@ -73,8 +67,6 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
     
     @Override
     public Object getChild(int groupPosition, int childPosititon) {
-//        return this._listDataChild.get(this._listDataHeader.get(groupPosition))
-//                .get(childPosititon);
     	OfferRide ride = rides.get(groupPosition);
     	int acceptedUsersSize = ride.getAcceptedUsers().size(); 
     	if(childPosititon < acceptedUsersSize){

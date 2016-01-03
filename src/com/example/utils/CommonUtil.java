@@ -115,4 +115,42 @@ public class CommonUtil {
 		}
 		return false;
 	}
+	
+	public boolean HaveIRequested(OfferRide ride, AnotherUser mUser){
+		if(mUser == null)
+			return false;
+		String rideId = ride.getRideId();
+		String userId = mUser.getId();
+		for(OfferRide reqRide : mUser.getRequestedRides()){
+			if(reqRide.getRideId().equals(rideId)){
+				return true;
+			}
+		}
+		
+		for(AnotherUser user : ride.getRequestedUsers()){
+			if(user.getId().equals(userId)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean HaveIAccepted(OfferRide ride, AnotherUser mUser){
+		if(mUser == null)
+			return false;
+		String rideId = ride.getRideId();
+		String userId = mUser.getId();
+		for(OfferRide reqRide : mUser.getAcceptedRides()){
+			if(reqRide.getRideId().equals(rideId)){
+				return true;
+			}
+		}
+		
+		for(AnotherUser user : ride.getAcceptedUsers()){
+			if(user.getId().equals(userId)){
+				return true;
+			}
+		}
+		return false;
+	}
 }

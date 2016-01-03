@@ -3,6 +3,10 @@ package com.example.testapp;
 import java.util.ArrayList;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -21,13 +25,17 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.example.autocomplete.PlaceArrayAdapter;
 import com.example.datamodel.AnotherUser;
+import com.example.datamodel.Message;
 import com.example.datamodel.OfferRide;
 import com.example.datamodel.User;
 import com.example.feeds.CustomExpandableListAdapter;
 import com.example.http.Httphandler;
 import com.example.http.Httphandler.HttpDataListener;
+import com.example.utils.Constants;
 import com.google.android.gms.location.places.Place;
 
 public class FeedsFragment extends Fragment {
@@ -159,14 +167,15 @@ public class FeedsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-//        mActivity.registerReceiver(mMessageReceiver, new IntentFilter(Constants.UPDATE_LIST_VIEW));
+        fetchFeeds();
+        mActivity.registerReceiver(mMessageReceiver, new IntentFilter(Constants.UPDATE_LIST_VIEW));
     }
 
     //Must unregister onPause()
     @Override
 	public void onPause() {
         super.onPause();
-//        mActivity.unregisterReceiver(mMessageReceiver);
+        mActivity.unregisterReceiver(mMessageReceiver);
     }
     
     public void fetchFeeds(){
@@ -236,15 +245,15 @@ public class FeedsFragment extends Fragment {
 		Httphandler.getSharedInstance().getUser(User.getSharedInstance().getUserId(), dataListener);
     }
     
-//    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//
-//            GcmMessage gcmMessage = intent.getExtras().getParcelable(Constants.GCM_MSG_OBJECT);
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            Message gcmMessage = intent.getExtras().getParcelable(Constants.SOME_NAME_FOR_GCM_OBJECT);
 //            Toast.makeText(context, gcmMessage.getTitle(), Toast.LENGTH_LONG).show();
-//            fetchFeeds();
-//        }
-//    };
+            fetchFeeds();
+        }
+    };
     
     public void openNewRideFragment(){
     	getFragmentManager()
